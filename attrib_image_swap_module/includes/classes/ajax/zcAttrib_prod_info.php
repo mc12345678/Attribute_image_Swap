@@ -6,12 +6,12 @@ class zcAttrib_prod_info extends base
   {
     global $db;
 
-    $products_options_values_id = $_POST['products_options_values_id'];
+    $products_options_values_id = (int)$_POST['products_options_values_id'];
 //    $alt = $_POST['alt'];
-    $width = $_POST['width'];
-    $height = $_POST['height'];
-    $products_id = $_POST['products_id'];
-    $alt = zen_get_products_name($products_id, $_SESSION['languages_id']);
+    $width = (float)$_POST['width'];
+    $height = (float)$_POST['height'];
+    $products_id = (int)$_POST['products_id'];
+    $alt = zen_get_products_name($products_id, (int)$_SESSION['languages_id']);
     
     $sql = "select    pa.attributes_image
             from      " . TABLE_PRODUCTS_ATTRIBUTES . " pa
