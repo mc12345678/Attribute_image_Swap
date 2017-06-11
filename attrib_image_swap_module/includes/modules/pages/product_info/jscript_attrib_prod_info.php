@@ -62,8 +62,9 @@ function stateChanged()
 	{    
 			
 			var product_color_image=xmlHttp.responseText;
+			if(product_color_image!=''){
 			document.getElementById('productMainImage').innerHTML = product_color_image;
-	
+			}
 	}
 }
 //--------------------------------------------------------

@@ -17,6 +17,8 @@ $account_query = $db->bindVars($sql, ':customersID', $_SESSION['customer_id'], '
 $products_color_image = $db->Execute($sql);
 
 $attributes_image = $products_color_image->fields['attributes_image'];
+if($attributes_image!=''){
 $image = zen_image('images/'.$attributes_image, $alt, $width, $height);
 ?>
 <?php echo '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . 'images/'.$attributes_image) . '\')">' . $image . '<br /><span class="imgLink">' . zen_image('images/bigger_picture.jpg', 'larger image', '140', '44') . '</span></a>'; ?>
+<?php }?>
