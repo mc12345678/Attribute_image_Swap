@@ -21,7 +21,7 @@
 //
 ?>
 <script type="text/javascript"><!--
-
+<?php if (ATTRIBUTES_ENABLED_IMAGES == 'true') { ?>
 function changebgcolor(id, color) {
 
     document.getElementById(id).style.backgroundColor = color;
@@ -37,6 +37,7 @@ function changevalue(field, color) {
 }
 
 var xmlHttp;
+var origImage; // "Global" variable to store the original Image.
 
 function GetXmlHttpObject() {
     xmlHttp = null;
@@ -62,6 +63,8 @@ var stateChanged = function () {
             var product_color_image = JSON.parse(xmlHttp.responseText);
             if (product_color_image !== "") {
                 document.getElementById("productMainImage").innerHTML = product_color_image;
+            } else {
+                document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
             }
         } else {
 //            alert("Problem retrieving data");
@@ -85,16 +88,21 @@ function getattribimage(attribfield, width, height, products_options_values_id, 
     xmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xmlHttp.send(params);
 }
-
+<?php } ?>
 function ais_init() {
     var n=document.forms.length;
+    origImage = document.getElementById("productMainImage").innerHTML; // Obtain original Image information.
+
+<?php if (ATTRIBUTES_ENABLED_IMAGES == 'true') {?>
+    var theForm;
+    
     for (var i=0; i<n; i++) {
         if (document.forms[i].name == "cart_quantity") {
             theForm = document.forms[i];
             break;
         }
     }
-
+    
     n=theForm.elements.length;
     for (i=0; i<n; i++) {
         switch (theForm.elements[i].type) {
@@ -116,6 +124,7 @@ function ais_init() {
                 break;
         }
     }
+    <?php } ?>
 }
 //--------------------------------------------------------
 

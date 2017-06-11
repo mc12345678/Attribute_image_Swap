@@ -14,6 +14,7 @@ class zcObserverAttribImageSwap extends base
         $observeThis[] = 'NOTIFY_ATTRIBUTES_MODULE_FORMAT_VALUE';
         $observeThis[] = 'NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH';
         $observeThis[] = 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT';
+        $observeThis[] = 'FUNCTIONS_LOOKUPS_OPTION_NAME_NO_VALUES_OPT_TYPE';
         
         $this->attach($this, $observeThis);
     }
@@ -130,6 +131,19 @@ class zcObserverAttribImageSwap extends base
         }
     }
     
+    // FUNCTIONS_LOOKUPS_OPTION_NAME_NO_VALUES_OPT_TYPE', $opt_type, $test_var)
+    function updateFunctionsLookupsOptionNameNoValuesOptType(&$callingClass, $notifier, $opt_type, &$test_var) {
+
+        // Check to see if the option type that is being evaluated is the link type added by this program.
+        if ($opt_type == PRODUCTS_OPTIONS_TYPE_LINK) {
+            // Set $test_var to false, which means that this option type is not expected to have a value associated with it.
+            // In ZC 1.5.5, this allows a product to be added to the cart that has this attribute.
+            // Calling function is found in includes/functions/functions_lookups.php: zen_option_name_base_expects_no_values
+            //  and in: admin/includes/functions/general.php
+            $test_var = false;
+        }
+    }
+    
     function update(&$callingClass, $notifier, $paramsArray = array()) {
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_START_OPTION') {
@@ -153,6 +167,11 @@ class zcObserverAttribImageSwap extends base
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT') {
             global $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image;
             $this->updateNotifyAttributesModuleOptionBuilt($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image);
+        }
+        
+        if ($notifier == 'FUNCTIONS_LOOKUPS_OPTION_NAME_NO_VALUES_OPT_TYPE') {
+            global $test_var;
+            $this->updateFunctionsLookupsOptionNameNoValuesOptType($callingClass, $notifier, $paramsArray, $test_var);
         }
     }
     

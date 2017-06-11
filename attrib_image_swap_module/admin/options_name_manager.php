@@ -4,7 +4,8 @@
  * @copyright Copyright 2003-2016 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: options_name_manager.php,v 1.1 2016/10/17 21:50:47 tbowen Exp $
+ * @version $Id: Author: DrByte  Thu Mar 3 12:16:32 2016 -0500 Modified in v1.5.5 $
+ * Added code for attrib_image_swap_module 2017-01-09 mc12345678
  */
 
   require('includes/application_top.php');

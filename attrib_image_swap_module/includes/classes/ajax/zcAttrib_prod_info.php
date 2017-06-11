@@ -29,7 +29,7 @@ class zcAttrib_prod_info extends base
     // Get html image code using attribute image or standard image.
     if ($products_image != '') {
         // Found an attribute image, now further image location necessary.
-    } else {
+/*    } else { // mc12345678 Commented out to support restoring the image to its original image instead of what is "calculated" below.
         $sql = "select p.products_image
                 FROM " . TABLE_PRODUCTS . " p
                 WHERE p.products_id = :products_id:";
@@ -43,7 +43,7 @@ class zcAttrib_prod_info extends base
         } else {
           $products_image = $products_color_image->fields['products_image'];
         }
-    }
+    }*/
 
     require_once(DIR_WS_MODULES . zen_get_module_directory(FILENAME_MAIN_PRODUCT_IMAGE));
     
@@ -56,7 +56,9 @@ class zcAttrib_prod_info extends base
     }
     
     $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
-    
+  } else { // mc12345678 Used to assign an indicate to return to the original image.
+    $image_return = "";
+  }
     return $image_return; 
   }
 }

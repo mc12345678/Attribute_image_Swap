@@ -43,6 +43,7 @@ For all installations, the following file(s) do not need to be uploaded to the s
 read me updated.txt
 sql_run.txt
 sql_run_missing_dropdowns.txt
+sql_run_remove.txt
 
 For new installations or updates after v1.5.6 of this plugin, the following additional file(s) do not need to be uploaded to the server:
 attrib_prod_info.php
@@ -52,7 +53,23 @@ For upgrades to v1.5.6 of this plugin, the following file(s) should be removed f
 attrib_prod_info.php
 includes/functions/extra_functions/vishal_functions.php
 
+For upgrades from 1.5.6 to v1.5.7 of this plugin:
+Replace: includes/classes/ajax/zcAttrib_prod_info.php
+includes/classes/observers/auto.attrib_image_swap.php
+includes/modules/pages/product_info/jscript_ais.php
+includes/modules/pages/product_info/on_load_ais.js
 
+Add: admin/includes/auto_loaders/config.attribute_image_swap.php
+
+Discussion of changes for v1.5.7:
+- Added "Removal" of most of the javascript code if the admin option to not display attribute images is set to true.  This
+is expected to have a positive impact on load speed for such conditions.
+- Modified the approach to the image swap, but left behind the previous code with it commented out.  The reason is that
+  now instead of returning a newly formatted image (which requires more device communication), the original image is
+  "restored" if there is no attribute image assigned.
+- Added some console logging of debug information if the attempt to execute the initialization code fails.
+
+Updated by mc12345678: mc12345678.com on 10 Jan 2017 v1.5.7 User profile: https://www.zen-cart.com/member.php?120199-mc12345678
 Updated by mc12345678: mc12345678.com on 18 Dec 2016 v1.5.6 User profile: https://www.zen-cart.com/member.php?120199-mc12345678
 Previously updated by travbow on 19 Oct 2016 v1.5.5 User profile: https://www.zen-cart.com/member.php?197702-travbow
 
