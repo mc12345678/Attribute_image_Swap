@@ -31,7 +31,7 @@ class zcObserverAttribImageSwap extends base
     {
         global $params;
         
-        if ($this->products_options_names_fields['products_options_images_style'] == 6) {
+        if ($this->products_options_names_fields['products_options_images_style'] == 6 || $this->products_options_names_fields['products_options_images_style'] == 8) {
             $params = ' onclick="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', ' . $products_options_fields['products_options_values_id'] . ', ' . (int)$_GET['products_id'] . ');"';
         } else {
             $params = '';
@@ -40,7 +40,7 @@ class zcObserverAttribImageSwap extends base
         
         // Select option requires an onchange event instead of an onclick event like say a radio, or checkbox...
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_SELECT) {
-            if ($this->products_options_names_fields['products_options_images_style'] == 6) {
+            if ($this->products_options_names_fields['products_options_images_style'] == 6 || $this->products_options_names_fields['products_options_images_style'] == 8) {
                 $params = ' onchange="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', this.value, ' . (int)$_GET['products_id'] . ');"';
             } else {
                 $params = '';
@@ -71,6 +71,7 @@ class zcObserverAttribImageSwap extends base
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_RADIO) {
             
             switch ($this->products_options_names_fields['products_options_images_style']) {
+                case '8':
                 case '6':
                     $tmp_radio .= zen_draw_radio_field('id[' . $this->products_options_names_fields['products_options_id'] . ']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"'.$this->parameters) . '<label class="attribsRadioButton zero" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
@@ -84,6 +85,7 @@ class zcObserverAttribImageSwap extends base
         // Addresses offering attribute image swap capability for checkboxes.  Items identified in this list will be replaced as applicable.
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_CHECKBOX) {
             switch ($this->products_options_names_fields['products_options_images_style']) {
+                case '8':
                 case '6':
                     $tmp_checkbox .= zen_draw_checkbox_field('id[' . $this->products_options_names_fields['products_options_id'] . ']['.$products_options_values_id.']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"'.$this->parameters) . '<label class="attribsCheckbox" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
@@ -128,6 +130,11 @@ class zcObserverAttribImageSwap extends base
             // This could maybe be commented out for 2 reasons: 1) images are not addressed in the below called function, and 2) if they need to be cleared they  will below.
             
             $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
+        }
+        
+        // Removes the image from being displayed adjacent to the attribute (products_options_images_style as selected on options Name Manager is set to 8 for the option name.
+        if (/*$products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_SELECT &&*/ $this->products_options_names_fields['products_options_images_style'] == 8) {
+          array_pop($options_attributes_image);
         }
     }
     
