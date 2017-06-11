@@ -1,0 +1,11 @@
+This module provides the functionality to get the attribute image in place of main product image when user selects the particular attribute.
+This functionality has a full control through admin. It can made on and off using admin.
+It is very easy to integrate with zen cart.
+
+To use this functionality ,
+copy this module and run the sql query using admin sql patches. 
+To ON this functionality select the option name in option name manager and   put the value 6 in Attribute Style for Radio Buttons/Checkbox:text box.
+It also works for check box and has additional option type Link.
+It can be made off by putting value 7 .
+Thanks.
+Will appreciate responce.
