@@ -1,3 +1,9 @@
-INSERT INTO `zen_products_options_types` VALUES (6, 'Link');
 
-INSERT INTO `zen_configuration` VALUES ('','Link product option type', 'PRODUCTS_OPTIONS_TYPE_LINK', '6', 'Numeric value of the link product option type', 6, 0, NULL, '', NULL, NULL);
+SELECT @products_options_types_id := pot.products_options_types_id+1
+			FROM `products_options_types` pot	
+			order by pot.products_options_types_id desc limit 1;
+
+INSERT INTO `products_options_types` (products_options_types_id, products_options_types_name) VALUES (@products_options_types_id, 'Link');
+
+INSERT INTO `configuration` (configuration_title, configuration_key, configuration_value,
+		configuration_description, configuration_group_id, sort_order, date_added, use_function, set_function) VALUES ('Link product option type', 'PRODUCTS_OPTIONS_TYPE_LINK', @products_options_types_id, 'Numeric value of the link product option type', 6, 0, now(), NULL, NULL);

@@ -667,9 +667,9 @@ function go_option() {
                      TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_2 . '<br />' .
                      TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_3 . '<br />' .
                      TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_4 . '<br />' .
-                     TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_5 . '<br />'.
-                     TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_6 . '<br />'.
-					 TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_7 . '<br />';
+                     TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_5 . '<br />' .
+                     TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_6 . '<br />' .
+                     TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_7 . '<br />';
               ?>
                 </td>
 

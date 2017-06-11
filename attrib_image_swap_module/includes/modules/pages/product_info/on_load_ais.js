@@ -1,0 +1,1 @@
+try { ais_init(); } catch(err) { }
