@@ -49,12 +49,13 @@ class zcAttrib_prod_info extends base
     
     $image = zen_image(addslashes($products_image_medium), $alt, $width, $height);
     
-    if (file_exists(DIR_WS_IMAGES . 'bigger_picture.jpg')) {
+    if ((defined('PRODUCTS_IMAGE_LARGER_TEXT_FILE_IMAGE') ? PRODUCTS_IMAGE_LARGER_TEXT_FILE_IMAGE : true) && file_exists(DIR_WS_IMAGES . 'bigger_picture.jpg')) {
         $larger_text = zen_image(DIR_WS_IMAGES . 'bigger_picture.jpg', 'larger image', '140', '44'); // Image to be stored and substitute for the standard text.
     } else {
         $larger_text = TEXT_CLICK_TO_ENLARGE;  // Standard default text for an image
     }
-    
+
+    // Generating only the javascript version of the link, because if javascript is disabled on the client side, then none of this is executed.
     $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
   } else { // mc12345678 Used to assign an indicate to return to the original image.
     $image_return = "";
