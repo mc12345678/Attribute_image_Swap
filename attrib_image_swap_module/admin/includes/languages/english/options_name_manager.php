@@ -17,7 +17,7 @@
 // | to obtain it through the world-wide-web, please send a note to       |
 // | license@zen-cart.com so we can mail you a copy immediately.          |
 // +----------------------------------------------------------------------+
-//  $Id: options_name_manager.php 2181 2005-10-20 18:37:16Z ajeh $
+//  $Id: options_name_manager.php,v 1.1 2016/10/17 21:50:47 tbowen Exp $
 //
 
 define('HEADING_TITLE_OPT', 'Product Options');
@@ -143,7 +143,7 @@ define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_2', '2= Element, Image and Option Nam
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_3', '3= Option Name Below Element and Image');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_4', '4= Element Below Image and Option Name');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_5', '5= Element Above Image and Option Name');
-define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_6', '6= Attribute Image Replaces Main PRoduct Image');
+define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_6', '6= Attribute Image Replaces Main Product Image');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_7', '7= DO Not Show Attribute Images');
 
 ?>

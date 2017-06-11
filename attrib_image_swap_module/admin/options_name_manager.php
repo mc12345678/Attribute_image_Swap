@@ -1,10 +1,10 @@
 <?php
 /**
  * @package admin
- * @copyright Copyright 2003-2006 Zen Cart Development Team
+ * @copyright Copyright 2003-2016 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: options_name_manager.php 4723 2006-10-11 00:59:28Z ajeh $
+ * @version $Id: options_name_manager.php,v 1.1 2016/10/17 21:50:47 tbowen Exp $
  */
 
   require('includes/application_top.php');
@@ -12,6 +12,19 @@
 
   require(DIR_WS_CLASSES . 'currencies.php');
   $currencies = new currencies();
+
+  // check for damaged database, caused by users indiscriminately deleting table data
+  $ary = array();
+  $chk_option_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS_VALUES . " where products_options_values_id=" . (int)PRODUCTS_OPTIONS_VALUES_TEXT_ID);
+  while (!$chk_option_values->EOF) {
+    $ary[] = $chk_option_values->fields['language_id'];
+    $chk_option_values->MoveNext();
+  }
+  for ($i=0, $n=sizeof($languages); $i<$n; $i ++) {
+    if ((int)$languages[$i]['id'] > 0 && !in_array((int)$languages[$i]['id'], $ary)) {
+      $db->Execute("INSERT INTO " . TABLE_PRODUCTS_OPTIONS_VALUES . " (products_options_values_id, language_id, products_options_values_name) VALUES (" . (int)PRODUCTS_OPTIONS_VALUES_TEXT_ID . ", " . (int)$languages[$i]['id'] . ", 'TEXT')");
+    }
+  }
 
   $action = (isset($_GET['action']) ? $_GET['action'] : '');
 
@@ -50,7 +63,7 @@
         zen_redirect(zen_href_link(FILENAME_OPTIONS_NAME_MANAGER));
         break;
       case 'add_product_options':
-      	//clr 030714 update to add option type to products_option.
+        //clr 030714 update to add option type to products_option.
         $products_options_id = zen_db_prepare_input($_POST['products_options_id']);
         $option_name_array = $_POST['option_name'];
         $products_options_sort_order = $_POST['products_options_sort_order'];
@@ -82,7 +95,7 @@
           case PRODUCTS_OPTIONS_TYPE_FILE:
             $db->Execute("insert into " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . "
                         (products_options_values_id, products_options_id)
-                        values ('" . PRODUCTS_OPTIONS_VALUES_TEXT_ID .  "',
+                        values ('" . (int)PRODUCTS_OPTIONS_VALUES_TEXT_ID .  "',
                                 '" .  (int)$products_options_id .  "')");
             break;
         }
@@ -92,13 +105,14 @@
         for ($i=0, $n=sizeof($languages); $i<$n; $i ++) {
           $option_name = zen_db_prepare_input($option_name_array[$languages[$i]['id']]);
 
-          $check= $db->Execute("select products_options_name
-                                from " . TABLE_PRODUCTS_OPTIONS . "
-                                where language_id= '" . $languages[$i]['id'] . "'
-                                and products_options_name='" . zen_db_input($option_name) . "'");
-
-          if ($check->RecordCount() > 1 and !empty($option_name)) {
-            $duplicate_option .= ' <b>' . strtoupper(zen_get_language_name($languages[$i]['id'])) . '</b> : ' . $option_name;
+          if (!empty($option_name)) {
+            $check= $db->Execute("select count(products_options_name) as count
+                                  from " . TABLE_PRODUCTS_OPTIONS . "
+                                  where language_id= '" . (int)$languages[$i]['id'] . "'
+                                  and products_options_name='" . zen_db_input($option_name) . "'");
+            if ($check->fields['count'] > 1) {
+              $duplicate_option .= ' <b>' . strtoupper(zen_get_language_name($languages[$i]['id'])) . '</b> : ' . $option_name;
+            }
           }
         }
         if (!empty($duplicate_option)) {
@@ -108,9 +122,9 @@
         zen_redirect(zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, $_SESSION['page_info'] . '&option_order_by=' . $option_order_by));
         break;
       case 'update_option_name':
-      	//clr 030714 update to add option type to products_option.
+        //clr 030714 update to add option type to products_option.
         $option_name_array = $_POST['option_name'];
-        $option_type = $_POST['option_type'];
+        $option_type = (int)$_POST['option_type'];
         $option_id = zen_db_prepare_input($_POST['option_id']);
         $products_options_sort_order_array = $_POST['products_options_sort_order'];
 
@@ -138,10 +152,9 @@
 //          zen_db_query("update " . TABLE_PRODUCTS_OPTIONS . " set products_options_name = '" . zen_db_input($option_name) . "', products_options_type = '" . $option_type . "' where products_options_id = '" . (int)$option_id . "' and language_id = '" . (int)$languages[$i]['id'] . "'");
 
           $db->Execute("update " . TABLE_PRODUCTS_OPTIONS . "
-                        set products_options_name = '" . zen_db_input($option_name) . "', products_options_type = '" . $option_type . "', products_options_length = '" . zen_db_input($products_options_length) . "', products_options_comment = '" . zen_db_input($products_options_comment) . "', products_options_size = '" . zen_db_input($products_options_size) . "', products_options_sort_order = '" . zen_db_input($products_options_sort_order) . "', products_options_sort_order = '" . zen_db_input($products_options_sort_order) . "', products_options_images_per_row = '" . zen_db_input($products_options_images_per_row) . "', products_options_images_style = '" . zen_db_input($products_options_images_style) . "', products_options_rows = '" . zen_db_input($products_options_rows) . "'
+                        set products_options_name = '" . zen_db_input($option_name) . "', products_options_type = '" . $option_type . "', products_options_length = '" . zen_db_input($products_options_length) . "', products_options_comment = '" . zen_db_input($products_options_comment) . "', products_options_size = '" . zen_db_input($products_options_size) . "', products_options_sort_order = '" . zen_db_input($products_options_sort_order) . "', products_options_images_per_row = '" . zen_db_input($products_options_images_per_row) . "', products_options_images_style = '" . zen_db_input($products_options_images_style) . "', products_options_rows = '" . zen_db_input($products_options_rows) . "'
                         where products_options_id = '" . (int)$option_id . "'
                         and language_id = '" . (int)$languages[$i]['id'] . "'");
-
         }
 
         switch ($option_type) {
@@ -150,14 +163,14 @@
 // disabled because this could cause trouble if someone changed types unintentionally and deleted all their option values.  Shops with small numbers of values per option should consider uncommenting this.
 //            zen_db_query("delete from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id = '" . $_POST['option_id'] . "'");
 // add in a record if none exists when option type is switched
-            $check_type = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . $_POST['option_id'] .  "' and products_options_values_id ='0'");
-            if ($check_type->EOF) {
-              $db->Execute("insert into " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " values (NULL, '" . $_POST['option_id'] . "', '" . PRODUCTS_OPTIONS_VALUES_TEXT_ID . "')");
+            $check_type = $db->Execute("select count(products_options_id) as count from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . (int)$_POST['option_id'] .  "' and products_options_values_id ='0'");
+            if ($check_type->fields['count'] == 0) {
+              $db->Execute("insert into " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " (products_options_values_to_products_options_id, products_options_id, products_options_values_id) values (NULL, '" . (int)$_POST['option_id'] . "', '" . (int)PRODUCTS_OPTIONS_VALUES_TEXT_ID . "')");
             }
             break;
           default:
 // if switched from file or text remove 0
-            $db->Execute("delete from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . $_POST['option_id'] . "' and products_options_values_id = '" . PRODUCTS_OPTIONS_VALUES_TEXT_ID . "'");
+            $db->Execute("delete from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . (int)$_POST['option_id'] . "' and products_options_values_id = '" . (int)PRODUCTS_OPTIONS_VALUES_TEXT_ID . "'");
             break;
         }
 
@@ -168,7 +181,7 @@
 
           $check= $db->Execute("select products_options_name
                                 from " . TABLE_PRODUCTS_OPTIONS . "
-                                where language_id= '" . $languages[$i]['id'] . "'
+                                where language_id= '" . (int)$languages[$i]['id'] . "'
                                 and products_options_name='" . zen_db_input($option_name) . "'");
 
           if ($check->RecordCount() > 1 and !empty($option_name)) {
@@ -186,14 +199,15 @@
         if (zen_admin_demo()) {
           $_GET['action']= '';
           $messageStack->add_session(ERROR_ADMIN_DEMO, 'caution');
-	        zen_redirect(zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, $_SESSION['page_info'] . '&option_order_by=' . $option_order_by));
+          zen_redirect(zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, $_SESSION['page_info'] . '&option_order_by=' . $option_order_by));
         }
         $option_id = zen_db_prepare_input($_GET['option_id']);
 
         $remove_option_values = $db->Execute("select products_options_id, products_options_values_id from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . (int)$option_id . "'");
 
         while (!$remove_option_values->EOF) {
-          $db->Execute("delete from " . TABLE_PRODUCTS_OPTIONS_VALUES . " where products_options_values_id='" . $remove_option_values->fields['products_options_values_id'] . "' and products_options_values_id !=0");
+          $zco_notifier->notify('OPTIONS_NAME_MANAGER_DELETE_OPTION', array('option_id' => $option_id, 'options_values_id' => (int)$remove_option_values->fields['products_options_values_id']));
+          $db->Execute("delete from " . TABLE_PRODUCTS_OPTIONS_VALUES . " where products_options_values_id='" . (int)$remove_option_values->fields['products_options_values_id'] . "' and products_options_values_id !=0");
           $remove_option_values->MoveNext();
         }
 
@@ -209,24 +223,24 @@
 // additional features
     case 'update_options_values':
       // get products to update with at least one option_value for selected options_name
-      $update_to = $_GET['update_to'];
+      $update_to = (int)$_GET['update_to'];
       $update_action = $_GET['update_action'];
 
       switch($update_to) {
         case (0):
         // all products
-        $all_update_products = $db->Execute("select distinct products_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where options_id='" . $_POST['options_id'] . "'");
+        $all_update_products = $db->Execute("select distinct products_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where options_id='" . (int)$_POST['options_id'] . "'");
         break;
         case (1):
         // one product
-        $product_to_update = $_POST['product_to_update'];
-        $all_update_products = $db->Execute("select distinct products_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where options_id='" . $_POST['options_id'] . "' and products_id='" . $product_to_update . "'");
+        $product_to_update = (int)$_POST['product_to_update'];
+        $all_update_products = $db->Execute("select distinct products_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where options_id='" . (int)$_POST['options_id'] . "' and products_id='" . $product_to_update . "'");
         break;
         case (2):
         // category of products
-        $category_to_update = $_POST['category_to_update'];
+        $category_to_update = (int)$_POST['category_to_update'];
 // re-write with categories
-        $all_update_products = $db->Execute("select distinct pa.products_id from " . TABLE_PRODUCTS_ATTRIBUTES . " pa left join " . TABLE_PRODUCTS_TO_CATEGORIES . " ptc on pa.products_id = ptc.products_id where ptc.categories_id ='" . $category_to_update . "' and pa.options_id='" . $_POST['options_id'] . "' and pa.products_id = ptc.products_id");
+        $all_update_products = $db->Execute("select distinct pa.products_id from " . TABLE_PRODUCTS_ATTRIBUTES . " pa left join " . TABLE_PRODUCTS_TO_CATEGORIES . " ptc on pa.products_id = ptc.products_id where ptc.categories_id ='" . $category_to_update . "' and pa.options_id='" . (int)$_POST['options_id'] . "' and pa.products_id = ptc.products_id");
         break;
       }
 
@@ -239,14 +253,14 @@
           // action add
           while (!$all_update_products->EOF) {
             // get all option_values
-            $all_options_values = $db->Execute("select products_options_id, products_options_values_id from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . $_POST['options_id'] . "'");
+            $all_options_values = $db->Execute("select products_options_id, products_options_values_id from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . (int)$_POST['options_id'] . "'");
             $updated = 'false';
            while (!$all_options_values->EOF) {
-              $check_all_options_values = $db->Execute("select products_attributes_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . $all_update_products->fields['products_id'] . "' and options_id='" . $all_options_values->fields['products_options_id'] . "' and options_values_id='" . $all_options_values->fields['products_options_values_id'] . "'");
+              $check_all_options_values = $db->Execute("select products_attributes_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . $all_update_products->fields['products_id'] . "' and options_id='" . (int)$all_options_values->fields['products_options_id'] . "' and options_values_id='" . (int)$all_options_values->fields['products_options_values_id'] . "'");
               if ($check_all_options_values->RecordCount() < 1) {
                 // add missing options_value_id
                 $updated = 'true';
-                $db->Execute("insert into " . TABLE_PRODUCTS_ATTRIBUTES . " (products_id, options_id, options_values_id) values ('" . $all_update_products->fields['products_id'] . "', '" . $all_options_values->fields['products_options_id'] . "', '" . $all_options_values->fields['products_options_values_id'] . "')");
+                $db->Execute("insert into " . TABLE_PRODUCTS_ATTRIBUTES . " (products_id, options_id, options_values_id) values ('" . (int)$all_update_products->fields['products_id'] . "', '" . (int)$all_options_values->fields['products_options_id'] . "', '" . (int)$all_options_values->fields['products_options_values_id'] . "')");
               } else {
                 // skip it the attribute is there
               }
@@ -257,7 +271,7 @@
             }
             $all_update_products->MoveNext();
           }
-          if ($updated='true') {
+          if ($updated == 'true') {
             $messageStack->add_session(SUCCESS_PRODUCTS_OPTIONS_VALUES, 'success');
           } else {
             $messageStack->add_session(ERROR_PRODUCTS_OPTIONS_VALUES, 'error');
@@ -266,16 +280,17 @@
           // action delete
           while (!$all_update_products->EOF) {
             // get all option_values
-            $all_options_values = $db->Execute("select products_options_id, products_options_values_id from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . $_POST['options_id'] . "'");
+            $all_options_values = $db->Execute("select products_options_id, products_options_values_id from " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " where products_options_id='" . (int)$_POST['options_id'] . "'");
             $updated = 'false';
            while (!$all_options_values->EOF) {
-              $check_all_options_values = $db->Execute("select products_attributes_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . $all_update_products->fields['products_id'] . "' and options_id='" . $all_options_values->fields['products_options_id'] . "' and options_values_id='" . $all_options_values->fields['products_options_values_id'] . "'");
+              $check_all_options_values = $db->Execute("select products_attributes_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . (int)$all_update_products->fields['products_id'] . "' and options_id='" . (int)$all_options_values->fields['products_options_id'] . "' and options_values_id='" . (int)$all_options_values->fields['products_options_values_id'] . "'");
               if ($check_all_options_values->RecordCount() >= 1) {
                 // delete for this product with Option Name options_value_id
 // echo '<br>This should be deleted: ' . zen_get_products_name($all_options_values->fields['products_options_id']);
 // change to delete
 // should add download delete
-                $db->Execute("delete from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . $all_update_products->fields['products_id'] . "' and options_id='" . $_POST['options_id'] . "'");
+                $db->Execute("delete from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . (int)$all_update_products->fields['products_id'] . "' and options_id='" . (int)$_POST['options_id'] . "'");
+                $zco_notifier->notify('OPTIONS_NAME_MANAGER_UPDATE_OPTIONS_VALUES_DELETE', array('products_id' => $all_update_products->fields['products_id'], 'options_id' => $all_options_values->fields['products_options_id'], 'options_values_id' => $all_options_values->fields['products_options_values_id']));
               } else {
                 // skip this option_name does not exist
               }
@@ -291,8 +306,8 @@
 ////////////////////////////////////
 // copy features
     case 'copy_options_values':
-      $options_id_from = $_POST['options_id_from'];
-      $options_id_to = $_POST['options_id_to'];
+      $options_id_from = (int)$_POST['options_id_from'];
+      $options_id_to = (int)$_POST['options_id_to'];
 
       if ($options_id_from == $options_id_to) {
         // cannot copy to self
@@ -300,17 +315,17 @@
       } else {
         // successful copy
         $start_id = $db->Execute("select pov.products_options_values_id from " . TABLE_PRODUCTS_OPTIONS_VALUES . " pov order by pov.products_options_values_id DESC LIMIT 1");
-        $copy_from_values = $db->Execute("select pov.* from " . TABLE_PRODUCTS_OPTIONS_VALUES . " pov left join " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " povtpo on pov.products_options_values_id= povtpo.products_options_values_id where povtpo.products_options_id='" . $options_id_from . "' order by povtpo.products_options_values_id");
+        $copy_from_values = $db->Execute("select pov.* from " . TABLE_PRODUCTS_OPTIONS_VALUES . " pov left join " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " povtpo on pov.products_options_values_id= povtpo.products_options_values_id where povtpo.products_options_id='" . (int)$options_id_from . "' order by povtpo.products_options_values_id");
         if ($copy_from_values->RecordCount() > 0) {
           // successful copy
           $next_id = ($start_id->fields['products_options_values_id'] + 1);
           while(!$copy_from_values->EOF) {
             $current_id = $copy_from_values->fields['products_options_values_id'];
-            $sql = "insert into " . TABLE_PRODUCTS_OPTIONS_VALUES . " values ('" . $next_id . "', '" . $copy_from_values->fields['language_id'] . "', '" . $copy_from_values->fields['products_options_values_name'] . "', '" . $copy_from_values->fields['products_options_values_sort_order'] . "')";
+            $sql = "insert into " . TABLE_PRODUCTS_OPTIONS_VALUES . " (products_options_values_id, language_id, products_options_values_name, products_options_values_sort_order) values ('" . (int)$next_id . "', '" . (int)$copy_from_values->fields['language_id'] . "', '" . $copy_from_values->fields['products_options_values_name'] . "', '" . (int)$copy_from_values->fields['products_options_values_sort_order'] . "')";
             $db->Execute($sql);
             $copy_from_values->MoveNext();
             if ($copy_from_values->fields['products_options_values_id'] != $current_id or $copy_from_values->EOF) {
-              $sql = "insert into " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " values (0, '" . $options_id_to . "', '" . $next_id . "')";
+              $sql = "insert into " . TABLE_PRODUCTS_OPTIONS_VALUES_TO_PRODUCTS_OPTIONS . " (products_options_id, products_options_values_id) values ('" . (int)$options_id_to . "', '" . (int)$next_id . "')";
               $db->Execute($sql);
               $next_id++;
             }
@@ -396,16 +411,16 @@ function go_option() {
 <!-- body_text //-->
 
     <!-- options and values//-->
-	<table border="0" width="75%" cellspacing="0" cellpadding="0" align="center">
+  <table border="0" width="75%" cellspacing="0" cellpadding="0" align="center">
       <tr>
         <td width="100%">
-    	    <table width="100%" border="0" cellspacing="0" cellpadding="2">
-    	      <tr>
-  	          <td height="40" valign="bottom">
-  	            <a href="<?php echo  zen_href_link(FILENAME_ATTRIBUTES_CONTROLLER, '', 'NONSSL') ?>"><?php echo zen_image_button('button_edit_attribs.gif', IMAGE_EDIT_ATTRIBUTES); ?></a> &nbsp;
+          <table width="100%" border="0" cellspacing="0" cellpadding="2">
+            <tr>
+              <td height="40" valign="bottom">
+                <a href="<?php echo  zen_href_link(FILENAME_ATTRIBUTES_CONTROLLER, '', 'NONSSL') ?>"><?php echo zen_image_button('button_edit_attribs.gif', IMAGE_EDIT_ATTRIBUTES); ?></a> &nbsp;
                 <a href="<?php echo  zen_href_link(FILENAME_OPTIONS_VALUES_MANAGER, '', 'NONSSL') ?>"><?php echo zen_image_button('button_option_values.gif', IMAGE_OPTION_VALUES); ?></a>
-  	          </td>
-  	          <td class="main" height="40" valign="bottom">
+              </td>
+              <td class="main" height="40" valign="bottom">
                 <?php
 // toggle switch for show copier features
                   $option_names_values_copier_array = array(array('id' => '0', 'text' => TEXT_SHOW_OPTION_NAMES_VALUES_COPIER_OFF),
@@ -530,8 +545,9 @@ function go_option() {
               <tr>
                 <td colspan="4" class="smallText">
 <?php
-    $per_page = MAX_ROW_LISTS_OPTIONS;
-    $options = "select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' order by " . $option_order_by;
+    $options = "select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = :languageId: order by :optionOrderBy:";
+    $options = $db->bindVars($options, ':languageId:', $_SESSION['languages_id'], 'integer');
+    $options = $db->bindVars($options, ':optionOrderBy:', $option_order_by, 'noquotestring');
     if (!isset($_GET['option_page'])) {
       $_GET['option_page'] = 1;
     }
@@ -539,10 +555,11 @@ function go_option() {
     $next_option_page = $_GET['option_page'] + 1;
 
     $option_query = $db->Execute($options);
-
-    $option_page_start = ($per_page * $_GET['option_page']) - $per_page;
     $num_rows = $option_query->RecordCount();
 
+    $per_page = (MAX_ROW_LISTS_OPTIONS == '') ? $num_rows : (int)MAX_ROW_LISTS_OPTIONS;
+
+    $option_page_start = ($per_page * $_GET['option_page']) - $per_page;
     if ($num_rows <= $per_page) {
       $num_pages = 1;
     } else if (($num_rows % $per_page) == 0) {
@@ -604,18 +621,18 @@ function go_option() {
 <?php
 // edit option name
       if (($action == 'update_option') && ($_GET['option_id'] == $options_values->fields['products_options_id'])) {
-        echo '<form name="option" action="' . zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_option_name' . (isset($_GET['option_page']) ? '&option_page=' . $_GET['option_page'] . '&' : '') . (isset($_GET['value_page']) ? '&value_page=' . $_GET['value_page'] . '&' : '') . (isset($_GET['attribute_page']) ? '&attribute_page=' . $_GET['attribute_page'] : '')  . '&option_order_by=' . $option_order_by) . '" method="post">';
+        echo '<form name="option" action="' . zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_option_name' . (isset($_GET['option_page']) ? '&option_page=' . $_GET['option_page'] . '&' : '') . (isset($_GET['value_page']) ? '&value_page=' . $_GET['value_page'] . '&' : '') . (isset($_GET['attribute_page']) ? '&attribute_page=' . $_GET['attribute_page'] : '')  . '&option_order_by=' . $option_order_by) . '" method="post">';echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']);
         $inputs = '';
         $inputs2 = '';
         for ($i = 0, $n = sizeof($languages); $i < $n; $i ++) {
           $option_name = $db->Execute("select products_options_name, products_options_sort_order, products_options_size, products_options_length, products_options_comment, products_options_images_per_row, products_options_images_style, products_options_rows
                                        from " . TABLE_PRODUCTS_OPTIONS . "
-                                       where products_options_id = '" . $options_values->fields['products_options_id'] . "'
-                                       and language_id = '" . $languages[$i]['id'] . "'");
+                                       where products_options_id = '" . (int)$options_values->fields['products_options_id'] . "'
+                                       and language_id = '" . (int)$languages[$i]['id'] . "'");
 
-          $inputs .= $languages[$i]['code'] . ':&nbsp;<input type="text" name="option_name[' . $languages[$i]['id'] . ']" ' . zen_set_field_length(TABLE_PRODUCTS_OPTIONS, 'products_options_name', 20) . ' value="' . $option_name->fields['products_options_name'] . '">' . TEXT_SORT . '<input type="text" name="products_options_sort_order[' . $languages[$i]['id'] . ']" size="3" value="' . $option_name->fields['products_options_sort_order'] . '">&nbsp;<br />';
+          $inputs .= $languages[$i]['code'] . ':&nbsp;<input type="text" name="option_name[' . $languages[$i]['id'] . ']" ' . zen_set_field_length(TABLE_PRODUCTS_OPTIONS, 'products_options_name', 40) . ' value="' . zen_output_string($option_name->fields['products_options_name']) . '">' . TEXT_SORT . '<input type="text" name="products_options_sort_order[' . $languages[$i]['id'] . ']" size="3" value="' . $option_name->fields['products_options_sort_order'] . '">&nbsp;<br />';
           $inputs2 .= $languages[$i]['code'] . ':&nbsp; ' .
-                   '&nbsp;' . TEXT_OPTION_VALUE_COMMENTS . '<input type="text" name="products_options_comment[' . $languages[$i]['id'] . ']" size="50" value="' . $option_name->fields['products_options_comment'] . '">' .
+                   '&nbsp;' . TEXT_OPTION_VALUE_COMMENTS . '<input type="text" name="products_options_comment[' . $languages[$i]['id'] . ']" size="50" value="' . zen_output_string($option_name->fields['products_options_comment']) . '">' .
                    '<br /><br />' . TEXT_OPTION_VALUE_ROWS . '<input type="text" name="products_options_rows[' . $languages[$i]['id'] . ']" size="3" value="' . $option_name->fields['products_options_rows'] . '">' .
                    '&nbsp;' . TEXT_OPTION_VALUE_SIZE . '<input type="text" name="products_options_size[' . $languages[$i]['id'] . ']" size="3" value="' . $option_name->fields['products_options_size'] . '">' .
                    '&nbsp;' . TEXT_OPTION_VALUE_MAX . '<input type="text" name="products_options_length[' . $languages[$i]['id'] . ']" size="3" value="' . $option_name->fields['products_options_length'] . '">' .
@@ -653,7 +670,6 @@ function go_option() {
                      TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_5 . '<br />'.
                      TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_6 . '<br />'.
 					 TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_7 . '<br />';
-
               ?>
                 </td>
 
@@ -704,10 +720,10 @@ function go_option() {
 ?>
               <tr class="<?php echo (floor($rows/2) == ($rows/2) ? 'attributes-even' : 'attributes-odd'); ?>">
 <?php
-      echo '<form name="options" action="' . zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=add_product_options' . (isset($_GET['option_page']) ? '&option_page=' . $_GET['option_page'] . '&' : '') . (isset($_GET['value_page']) ? '&value_page=' . $_GET['value_page'] . '&' : '') . (isset($_GET['attribute_page']) ? '&attribute_page=' . $_GET['attribute_page'] : '') . '&option_order_by=' . $option_order_by ) . '" method="post"><input type="hidden" name="products_options_id" value="' . $next_id . '">';
+      echo '<form name="options" action="' . zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=add_product_options' . (isset($_GET['option_page']) ? '&option_page=' . $_GET['option_page'] . '&' : '') . (isset($_GET['value_page']) ? '&value_page=' . $_GET['value_page'] . '&' : '') . (isset($_GET['attribute_page']) ? '&attribute_page=' . $_GET['attribute_page'] : '') . '&option_order_by=' . $option_order_by ) . '" method="post"><input type="hidden" name="products_options_id" value="' . $next_id . '">';echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']);
       $inputs = '';
       for ($i = 0, $n = sizeof($languages); $i < $n; $i ++) {
-        $inputs .= $languages[$i]['code'] . ':&nbsp;<input type="text" name="option_name[' . $languages[$i]['id'] . ']" ' . zen_set_field_length(TABLE_PRODUCTS_OPTIONS, 'products_options_name', 25) . '>' . TEXT_SORT . '<input type="text" name="products_options_sort_order[' . $languages[$i]['id'] . ']" size="3">' . '&nbsp;<br />';
+        $inputs .= $languages[$i]['code'] . ':&nbsp;<input type="text" name="option_name[' . $languages[$i]['id'] . ']" ' . zen_set_field_length(TABLE_PRODUCTS_OPTIONS, 'products_options_name', 40) . '>' . TEXT_SORT . '<input type="text" name="products_options_sort_order[' . $languages[$i]['id'] . ']" size="3">' . '&nbsp;<br />';
       }
 //CLR 030212 - Add column for option type
 ?>
@@ -754,10 +770,10 @@ function go_option() {
   </table>
 
 <!-- ADD - additional features //-->
-	<table border="2" width="75%" cellspacing="0" cellpadding="0" align="center">
+  <table border="2" width="75%" cellspacing="0" cellpadding="0" align="center">
       <tr>
         <td width="100%">
-    	    <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%" border="0" cellspacing="0" cellpadding="2">
 
 <!-- bof: add all option values to products with current Option Name -->
             <tr>
@@ -769,10 +785,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=0&update_action=0' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=0&update_action=0' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION; ?><br /><select name="options_id">
 <?php
-        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values->EOF) {
             echo "\n" . '<option name="' . $options_values->fields['products_options_name'] . '" value="' . $options_values->fields['products_options_id'] . '">' . $options_values->fields['products_options_name'] . '</option>';
             $options_values->MoveNext();
@@ -795,10 +811,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=1&update_action=0' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=1&update_action=0' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION; ?><br /><select name="options_id">
 <?php
-        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values->EOF) {
             echo "\n" . '<option name="' . $options_values->fields['products_options_name'] . '" value="' . $options_values->fields['products_options_id'] . '">' . $options_values->fields['products_options_name'] . '</option>';
             $options_values->MoveNext();
@@ -823,10 +839,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=2&update_action=0' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=2&update_action=0' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION; ?><br /><select name="options_id">
 <?php
-        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values->EOF) {
             echo "\n" . '<option name="' . $options_values->fields['products_options_name'] . '" value="' . $options_values->fields['products_options_id'] . '">' . $options_values->fields['products_options_name'] . '</option>';
             $options_values->MoveNext();
@@ -847,9 +863,9 @@ function go_option() {
             </tr>
 <!-- eof: add all option values to products with current Option Name -->
 
-    	    </table>
-    	  </td>
-    	</tr>
+          </table>
+        </td>
+      </tr>
    </table>
 <!-- ADD - additional features eof //-->
 
@@ -860,10 +876,10 @@ function go_option() {
   </table>
 
 <!-- DELETE - additional features //-->
-	<table border="2" width="75%" cellspacing="0" cellpadding="0" align="center">
+  <table border="2" width="75%" cellspacing="0" cellpadding="0" align="center">
       <tr>
         <td width="100%">
-    	    <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%" border="0" cellspacing="0" cellpadding="2">
 
 <!-- bof: delete all option values to products with current Option Name -->
             <tr>
@@ -875,10 +891,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=0&update_action=1' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=0&update_action=1' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION; ?><br /><select name="options_id">
 <?php
-        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values->EOF) {
             echo "\n" . '<option name="' . $options_values->fields['products_options_name'] . '" value="' . $options_values->fields['products_options_id'] . '">' . $options_values->fields['products_options_name'] . '</option>';
             $options_values->MoveNext();
@@ -901,10 +917,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=1&update_action=1' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=1&update_action=1' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION; ?><br /><select name="options_id">
 <?php
-        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values->EOF) {
             echo "\n" . '<option name="' . $options_values->fields['products_options_name'] . '" value="' . $options_values->fields['products_options_id'] . '">' . $options_values->fields['products_options_name'] . '</option>';
             $options_values->MoveNext();
@@ -929,10 +945,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=2&update_action=1' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=update_options_values&update_to=2&update_action=1' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION; ?><br /><select name="options_id">
 <?php
-        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values->EOF) {
             echo "\n" . '<option name="' . $options_values->fields['products_options_name'] . '" value="' . $options_values->fields['products_options_id'] . '">' . $options_values->fields['products_options_name'] . '</option>';
             $options_values->MoveNext();
@@ -953,9 +969,9 @@ function go_option() {
             </tr>
 <!-- eof: delete all option values to products with current Option Name -->
 
-    	    </table>
-    	  </td>
-    	</tr>
+          </table>
+        </td>
+      </tr>
    </table>
 <!-- DELETE - additional features eof //-->
 
@@ -968,10 +984,10 @@ function go_option() {
 
 
 <!-- COPY - additional features //-->
-	<table border="2" width="75%" cellspacing="0" cellpadding="0" align="center">
+  <table border="2" width="75%" cellspacing="0" cellpadding="0" align="center">
       <tr>
         <td width="100%">
-    	    <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%" border="0" cellspacing="0" cellpadding="2">
 
 <!-- bof: copy all option values to another Option Name -->
             <tr>
@@ -983,10 +999,10 @@ function go_option() {
             <tr class="dataTableHeadingRow">
               <td><table border="0" cellspacing="0" cellpadding="2">
                 <tr class="dataTableHeadingRow">
-                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=copy_options_values' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>">
+                  <form name="quick_jump" method="post" action="<?php echo zen_href_link(FILENAME_OPTIONS_NAME_MANAGER, 'action=copy_options_values' . '&option_order_by=' . $option_order_by, 'NONSSL'); ?>"><?php echo zen_draw_hidden_field('securityToken', $_SESSION['securityToken']); ?>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION_FROM; ?><br /><select name="options_id_from">
 <?php
-        $options_values_from = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values_from = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . (int)$_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values_from->EOF) {
             echo "\n" . '<option name="' . $options_values_from->fields['products_options_name'] . '" value="' . $options_values_from->fields['products_options_id'] . '">' . $options_values_from->fields['products_options_name'] . '</option>';
             $options_values_from->MoveNext();
@@ -996,7 +1012,7 @@ function go_option() {
                   <td class="dataTableHeadingContent" width="75">&nbsp;</td>
                   <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION_TO; ?><br /><select name="options_id_to">
 <?php
-        $options_values_to = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" . $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
+        $options_values_to = $db->Execute("select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = '" .(int) $_SESSION['languages_id'] . "' and products_options_name !='' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_TEXT . "' and products_options_type !='" . (int)PRODUCTS_OPTIONS_TYPE_FILE . "' order by products_options_name");
         while(!$options_values_to->EOF) {
             echo "\n" . '<option name="' . $options_values_to->fields['products_options_name'] . '" value="' . $options_values_to->fields['products_options_id'] . '">' . $options_values_to->fields['products_options_name'] . '</option>';
             $options_values_to->MoveNext();
@@ -1010,10 +1026,10 @@ function go_option() {
               </table></td>
             </tr>
 <!-- eof: copy all option values to another Option Name -->
-    	    </table>
+          </table>
 <?php } // show copier features ?>
-    	  </td>
-    	</tr>
+        </td>
+      </tr>
    </table>
 
 
