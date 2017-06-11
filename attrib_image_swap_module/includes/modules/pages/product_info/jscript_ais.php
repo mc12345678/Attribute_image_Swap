@@ -71,30 +71,76 @@ var stateChanged = function () {
             console.log(this.responseText);
         }
     }
-}
+};
 
 function getattribimage(attribfield, width, height, products_options_values_id, products_id) {
-    xmlHttp = new GetXmlHttpObject();
+    if (typeof zcJS == "undefined" || !zcJS) {
 
-    if (xmlHttp === null) {
-        alert("Your browser does not support AJAX!");
-        return;
+        xmlHttp = new GetXmlHttpObject();
+
+        if (xmlHttp === null) {
+            alert("Your browser does not support AJAX!");
+            return;
+        }
+        url = "ajax.php?act=attrib_prod_info&method=swap_image";
+        params = "width=" + width + "&height=" + height + "&products_options_values_id=" + products_options_values_id + "&products_id=" + products_id;
+        xmlHttp.onreadystatechange = stateChanged;
+        xmlHttp.open("POST", url, true);
+        xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xmlHttp.send(params);
+    } else {
+        var jsonData = {};
+
+        jsonData["width"] = width;
+        jsonData["height"] = height;
+        jsonData["products_options_values_id"] = products_options_values_id;
+        jsonData["products_id"] = products_id;
+
+        var option = { url : "ajax.php?act=attrib_prod_info&method=swap_image",
+                       data : jsonData,
+                       timeout : 30000
+                     };
+
+        zcJS.ajax(option).done(
+            function (response,textStatus,jqXHR) {
+
+                var product_color_image = JSON.parse(jqXHR.responseText);
+                if (product_color_image !== "") {
+                    document.getElementById("productMainImage").innerHTML = product_color_image;
+                } else {
+                    document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
+                }
+            }
+        ).fail( function(jqXHR,textStatus,errorThrown) {
+            console.log(errorThrown);
+//            alert("Status returned - " + textStatus);
+        });
+
     }
-    url = "ajax.php?act=attrib_prod_info&method=swap_image";
-    params = "width=" + width + "&height=" + height + "&products_options_values_id=" + products_options_values_id + "&products_id=" + products_id;
-    xmlHttp.onreadystatechange = stateChanged;
-    xmlHttp.open("POST", url, true);
-    xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    xmlHttp.send(params);
-}
+};
 <?php } ?>
 function ais_init() {
     var n=document.forms.length;
     origImage = document.getElementById("productMainImage").innerHTML; // Obtain original Image information.
 
-<?php if (ATTRIBUTES_ENABLED_IMAGES == 'true') {?>
-    var theForm;
+<?php // Has attributes, and at least one of the option names has a setting of 6 or 8 and an image
+  $ais_support = defined('ATTRIBUTES_ENABLED_IMAGES') && ATTRIBUTES_ENABLED_IMAGES == 'true' && isset($_GET['products_id']) && $_GET['products_id'] != '' && zen_has_product_attributes((int)$_GET['products_id']);
+
+  if ($ais_support) {
+    $sql = "SELECT count(*) AS quantity
+          from " . TABLE_PRODUCTS_OPTIONS . " popt, " . TABLE_PRODUCTS_ATTRIBUTES . " patrib
+          where    patrib.products_id=" . (int)$_GET['products_id'] . "
+            and      patrib.options_id = popt.products_options_id
+            and      popt.language_id = " . (int)$_SESSION['languages_id'] . "
+            and (popt.products_options_images_style = 6 OR popt.products_options_images_style = 8)
+             limit 1";
+    $has_ais = $db->Execute($sql);
+    $ais_support = $has_ais->fields['quantity'] > 0;
+  }
+
+if ($ais_support) {?>
+    var theForm = false;
     
     for (var i=0; i<n; i++) {
         if (document.forms[i].name == "cart_quantity") {
@@ -103,29 +149,34 @@ function ais_init() {
         }
     }
     
-    n=theForm.elements.length;
-    for (i=0; i<n; i++) {
-        switch (theForm.elements[i].type) {
-            case "select":
-            case "select-one":
-                theForm.elements[i].onchange();
-                break;
-            case "text'":
-                theForm.elements[i].onkeyup();
-                break;
-            case "checkbox":
-            case "radio":
-                theForm.elements[i].onclick();
-                break;
-            case "number":
-                theForm.elements[i].onchange();
-                theForm.elements[i].onkeyup();
-                theForm.elements[i].oninput();
-                break;
+    if (theForm) {
+        n=theForm.elements.length;
+        for (i=0; i<n; i++) {
+            if (theForm.elements[i].name == "cart_quantity") {
+                continue;
+            }
+            switch (theForm.elements[i].type) {
+                case "select":
+                case "select-one":
+                    theForm.elements[i].onchange();
+                    break;
+                case "text":
+                    theForm.elements[i].onkeyup();
+                    break;
+                case "checkbox":
+                case "radio":
+                    theForm.elements[i].onclick();
+                    break;
+                case "number":
+                    theForm.elements[i].onchange();
+                    theForm.elements[i].onkeyup();
+                    theForm.elements[i].oninput();
+                    break;
+            }
         }
     }
     <?php } ?>
-}
+};
 //--------------------------------------------------------
 
 //--></script>
