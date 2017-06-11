@@ -25,7 +25,7 @@
 function changebgcolor(id, color) {
 
     document.getElementById(id).style.backgroundColor = color;
-}
+};
 
 function changevalue(field, color) {
     var i;
@@ -34,7 +34,7 @@ function changevalue(field, color) {
             document.cart_quantity.elements[i].value = color;
         }
     }
-}
+};
 
 var xmlHttp;
 var origImage; // "Global" variable to store the original Image.
@@ -55,7 +55,7 @@ function GetXmlHttpObject() {
         }
     }
     return xmlHttp;
-}
+};
 
 var stateChanged = function () {
     if (xmlHttp.readyState === XMLHttpRequest.DONE) {
