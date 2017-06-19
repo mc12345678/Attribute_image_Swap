@@ -143,8 +143,10 @@ define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_2', '2= Element, Image and Option Nam
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_3', '3= Option Name Below Element and Image');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_4', '4= Element Below Image and Option Name');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_5', '5= Element Above Image and Option Name');
+/* mc12345678 Attribute Image Swap Start Add description of additional options supported by Attributes Image Swap */
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_6', '6= Attribute Image Replaces Main Product Image');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_7', '7= DO Not Show Attribute Images');
 define('TEXT_OPTION_ATTRIBUTE_IMAGES_STYLE_8', '8= Swap but Do Not show Attribute Image adjacent to attribute.');
+/* mc12345678 Attribute Image Swap End Add description of additional options supported by Attributes Image Swap */
 
 ?>
