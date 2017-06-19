@@ -55,8 +55,18 @@ class zcAttrib_prod_info extends base
         $larger_text = TEXT_CLICK_TO_ENLARGE;  // Standard default text for an image
     }
 
-    // Generating only the javascript version of the link, because if javascript is disabled on the client side, then none of this is executed.
-    $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
+    if(function_exists('zen_colorbox') && ZEN_COLORBOX_STATUS == 'true') {
+      if(ZEN_COLORBOX_GALLERY_MODE == 'true' && ZEN_COLORBOX_GALLERY_MAIN_IMAGE == 'true') {
+        $rel = 'colorbox';
+      } else {
+        $rel = 'colorbox-' . rand(100, 999);
+      }
+      $products_name = zen_products_lookup((int)$products_id, 'products_name');
+      $image_return = '<a href="' . zen_colorbox($products_image_large, addslashes($products_name), LARGE_IMAGE_WIDTH, LARGE_IMAGE_HEIGHT) . '" rel="' . $rel . '" class="'. "nofollow" . '" title="'. addslashes($products_name) . '">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
+    } else {
+      // Generating only the javascript version of the link, because if javascript is disabled on the client side, then none of this is executed.
+      $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
+    }
   } else { // mc12345678 Used to assign an indicate to return to the original image.
     $image_return = "";
   }

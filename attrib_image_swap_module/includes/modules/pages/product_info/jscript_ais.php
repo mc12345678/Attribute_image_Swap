@@ -66,6 +66,10 @@ var stateChanged = function () {
             } else {
                 document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
             }
+                <?php if (defined('ZEN_COLORBOX_STATUS') && ZEN_COLORBOX_STATUS == 'true') {
+                  require(DIR_FS_CATALOG . DIR_WS_CLASSES . 'zen_colorbox/autoload_default.php');
+                  }
+                ?>
         } else {
 //            alert("Problem retrieving data");
             console.log(this.responseText);
@@ -111,6 +115,10 @@ function getattribimage(attribfield, width, height, products_options_values_id, 
                 } else {
                     document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
                 }
+                <?php if (defined('ZEN_COLORBOX_STATUS') && ZEN_COLORBOX_STATUS == 'true') {
+                  require(DIR_FS_CATALOG . DIR_WS_CLASSES . 'zen_colorbox/autoload_default.php');
+                  }
+                ?>
             }
         ).fail( function(jqXHR,textStatus,errorThrown) {
             console.log(errorThrown);
