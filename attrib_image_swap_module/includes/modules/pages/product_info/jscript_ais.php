@@ -165,7 +165,9 @@ if ($ais_support) {?>
                     break;
                 case "checkbox":
                 case "radio":
-                    theForm.elements[i].onclick();
+                    if (document.getElementById(theForm.elements[i].id).checked) {
+                      theForm.elements[i].onclick();
+                    }
                     break;
                 case "number":
                     theForm.elements[i].onchange();
