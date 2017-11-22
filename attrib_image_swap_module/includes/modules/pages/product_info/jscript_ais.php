@@ -86,7 +86,7 @@ function getattribimage(attribfield, width, height, products_options_values_id, 
             alert("Your browser does not support AJAX!");
             return;
         }
-        url = "ajax.php?act=attrib_prod_info&method=swap_image";
+        url = "ajax.php?act=attrib_prod_info&method=swap_image<?php echo (!empty(zen_get_all_get_params(array('action')))) ? '&' . preg_replace("/&$/","",zen_get_all_get_params(array('action'))) : ''; ?>";
         params = "width=" + width + "&height=" + height + "&products_options_values_id=" + products_options_values_id + "&products_id=" + products_id;
         xmlHttp.onreadystatechange = stateChanged;
         xmlHttp.open("POST", url, true);
@@ -101,7 +101,7 @@ function getattribimage(attribfield, width, height, products_options_values_id, 
         jsonData["products_options_values_id"] = products_options_values_id;
         jsonData["products_id"] = products_id;
 
-        var option = { url : "ajax.php?act=attrib_prod_info&method=swap_image",
+        var option = { url : "ajax.php?act=attrib_prod_info&method=swap_image<?php echo (!empty(zen_get_all_get_params(array('action')))) ? '&' . preg_replace("/&$/","",zen_get_all_get_params(array('action'))) : ''; ?>",
                        data : jsonData,
                        timeout : 30000
                      };
