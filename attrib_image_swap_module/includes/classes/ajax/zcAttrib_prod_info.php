@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class zcAttrib_prod_info extends base 
 {
