@@ -4,7 +4,7 @@ class zcAttrib_prod_info extends base
 {
   function swap_image()
   {
-    global $db;
+    global $db, $zco_notifier;
 
     $products_options_values_id = (int)$_POST['products_options_values_id'];
 //    $alt = $_POST['alt'];
