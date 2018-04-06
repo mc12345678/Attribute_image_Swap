@@ -149,14 +149,14 @@ function ais_init() {
 
 if ($ais_support) {?>
     var theForm = false;
-    
+
     for (var i=0; i<n; i++) {
         if (document.forms[i].name == "cart_quantity") {
             theForm = document.forms[i];
             break;
         }
     }
-    
+
     if (theForm) {
         n=theForm.elements.length;
         for (i=0; i<n; i++) {
@@ -166,21 +166,45 @@ if ($ais_support) {?>
             switch (theForm.elements[i].type) {
                 case "select":
                 case "select-one":
-                    theForm.elements[i].onchange();
+                    try {
+                        theForm.elements[i].onchange();
+                    } catch (err) {
+                        // Action not associated with element.
+                    }
                     break;
                 case "text":
-                    theForm.elements[i].onkeyup();
+                    try {
+                        theForm.elements[i].onkeyup();
+                    } catch (err) {
+                        // Action not associated with element.
+                    }
                     break;
                 case "checkbox":
                 case "radio":
                     if (document.getElementById(theForm.elements[i].id).checked) {
-                      theForm.elements[i].onclick();
+                        try {
+                            theForm.elements[i].onclick();
+                        } catch (err) {
+                            // Action not associated with element.
+                        }
                     }
                     break;
                 case "number":
-                    theForm.elements[i].onchange();
-                    theForm.elements[i].onkeyup();
-                    theForm.elements[i].oninput();
+                    try {
+                        theForm.elements[i].onchange();
+                    } catch (err) {
+                        // Action not associated with element.
+                    }
+                    try {
+                        theForm.elements[i].onkeyup();
+                    } catch (err) {
+                        // Action not associated with element.
+                    }
+                    try {
+                        theForm.elements[i].oninput();
+                    } catch (err) {
+                        // Action not associated with element.
+                    }
                     break;
             }
         }
