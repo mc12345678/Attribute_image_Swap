@@ -199,4 +199,51 @@ class zcObserverAttribImageSwap extends base
         
         return $link;
     }
+
+    function get_attrib_image($products_id = 0, $products_options_values_id = 0) {
+        global $db, $lng;
+
+        if (!zen_products_id_valid($products_id) || 0 >= (int)$products_options_values_id) {
+            return '';
+        }
+
+        $sql = "select    pa.attributes_image, pov.language_id
+                from      " . TABLE_PRODUCTS_ATTRIBUTES . " pa,
+                " . TABLE_PRODUCTS_OPTIONS_VALUES . " pov
+                where     pa.products_id = :products_id:
+                and       pa.options_values_id = :products_options_values_id:
+                and       pa.options_values_id = pov.products_options_values_id";
+
+        $sql = $db->bindVars($sql, ':products_id:', $products_id, 'integer');
+        $sql = $db->bindVars($sql, ':products_options_values_id:', $products_options_values_id, 'integer');
+
+        $products_color_image = $db->Execute($sql);
+
+        if (empty($lng)) {
+            $lng = new language(DEFAULT_LANGUAGE);
+        }
+
+        $default_lang_id = $lng->catalog_languages[DEFAULT_LANGUAGE]['id'];
+
+        while (!$products_color_image->EOF) {
+            if ($products_color_image->fields['language_id'] != $_SESSION['languages_id'] && $products_color_image->fields['language_id'] != $default_lang_id) {
+                $products_color_image->MoveNext();
+                continue;
+            }
+            if ($products_color_image->fields['language_id'] == $_SESSION['languages_id']) {
+                $products_image['lang'] = $products_color_image->fields['attributes_image'];
+                $products_color_image->MoveNext();
+                continue;
+            }
+            if ($products_color_image->fields['language_id'] == $default_lang_id) {
+                $products_image['default'] = $products_color_image->fields['attributes_image'];
+                $products_color_image->MoveNext();
+                continue;
+            }
+            $products_color_image->MoveNext();
+        }
+        $products_image = !empty($products_image['lang']) ? $products_image['lang'] : $products_image['default'];
+
+        return $products_image;
+    }
 }
