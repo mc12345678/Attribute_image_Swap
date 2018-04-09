@@ -3,17 +3,20 @@ Forum thread: https://www.zen-cart.com/showthread.php?98315-Attribute-image-repl
 
 In this improved verson, the main image remains the same for the attribute which does not have attribute images and returns
 to the product image after selecting an attribute that doesn't have an attribute image. It also now supports at least using
-the image provided by image handlers such as Image Handler version 4 and showing the swapped image inside of Zen Colorbox.
-This module provides the functionality to get the attribute image in place of the main product image when the user selects 
+the image provided by image handlers such as Image Handler version 4 or version 5 and showing the swapped image inside of
+Zen Colorbox.
+This module provides the functionality to get the attribute image in place of the main product image when the user selects
 the particular attribute.
 This functionality has full control through admin. It can be turned on and off for designated option names from the admin.
 It is very easy to integrate with zen cart.
+The image selected is also carried over into the shopping cart through an observer.  If there is existing software that
+displays the attribute dependent selected image, then recommend that the installation of the feature added here be omitted.
 
 To use this functionality,
 rename the YOUR_TEMPLATE directory found in includes/modules to the name of your template and merge the contents of the file(s)
 in that folder with the file(s) in your existing template folder.  The file has been made compatible with potteryhouse's 
-stock by attributes, with products attribute grid and is based on ZC 1.5.5.  In the root directory is a copy of ZC 1.5.5.b's ajax.php file
-that was updated 02 Nov 2016 which should be an improved version over previous ZC versions and it should also replace the use of attrib_prod_info.php and add
+stock by attributes, with products attribute grid and is based on ZC 1.5.5.  In the root directory is a copy of ZC 1.5.6's ajax.php file
+that was updated in Aug 2017 which should be an improved version over previous ZC versions and it should also replace the use of attrib_prod_info.php and add
 the protection offered by ZC functionality.
 
 Two ways to address the admin files: either rename the admin folder to your *SECRET* admin directory name and upload
@@ -33,6 +36,10 @@ from the file: includes/classes/ajax/zcAttrib_prod_info.php and the function swa
 The return code will be json_encoded by ajax.php then will go through JSON.parse on the receiving page.  Thus, addition
 of other javascript into that return will have to be properly escaped to maintain valid JSON throughout the communication.
 Code for color-box or other main-image modifiers can be added to that return result.
+
+The file includes/classes/observers/auto.attrib_image_swap_shopping_cart.php was added to handle replacing the product's
+image with the attribute related image as configured by this plugin.  If another plugin performs the same operation and is
+preferred, then this file can be omitted from the installation.
 Will appreciate response. Please provide comment about the plugin to further upgrade this module.
 Thanks. 
 
@@ -65,6 +72,14 @@ includes/modules/pages/product_info/jscript_ais.php
 includes/modules/pages/product_info/on_load_ais.js
 
 Add: admin/includes/auto_loaders/config.attribute_image_swap.php
+
+Updated 04/07/18, V1.5.9: (mc12345678)
+- Added try/catch javascript style code to support return from shopping cart where attributes do not have an assigned action.
+- Added observer to modify the shopping_cart image based on selections made when adding the product to the cart.
+- Corrected an encoding issue with the ajax file (Changed from UTF-8 with BOM to ANSI)
+- Added the $zco_notifier to the ajax file to support changes made in the module main_product_images to offer the use of observers.
+- Reworked the ajax file to offer up-front processing.
+- Added a function (get_attrib_image) to the observer class to reduce code redundancy and to offer a consistent image retrieval method.
 
 Updated 07/16/17, V1.5.8: (mc12345678)
 - Incorporated an option to swap the attribute image but not to show the attribute image adjacent to the attributes.
