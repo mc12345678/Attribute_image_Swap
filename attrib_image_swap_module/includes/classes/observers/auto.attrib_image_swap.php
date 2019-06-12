@@ -6,7 +6,7 @@ class zcObserverAttribImageSwap extends base
     private $parameters;
     private $tmp_html;
     
-    function __construct() 
+    public function __construct()
     {
         $observeThis = array();
         $observeThis[] = 'NOTIFY_ATTRIBUTES_MODULE_START_OPTION';
@@ -20,14 +20,14 @@ class zcObserverAttribImageSwap extends base
     }
     
     // NOTIFY_ATTRIBUTES_MODULE_START_OPTION
-    function updateNotifyAttributesModuleStartOption(&$callingClass, $notifier, $products_options_names_fields)
+    protected function updateNotifyAttributesModuleStartOption(&$callingClass, $notifier, $products_options_names_fields)
     {
         $this->products_options_names_fields = $products_options_names_fields;
         $this->parameters = '';
     }
     
     // NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP
-    function updateNotifyAttributesModuleStartOptionsLoop(&$callingClass, $notifier, $i, &$products_options_fields)
+    protected function updateNotifyAttributesModuleStartOptionsLoop(&$callingClass, $notifier, $i, &$products_options_fields)
     {
         global $params;
         
@@ -55,7 +55,7 @@ class zcObserverAttribImageSwap extends base
     }
     
     // NOTIFY_ATTRIBUTES_MODULE_FORMAT_VALUE
-    function updateNotifyAttributesModuleFormatValue(&$callingClass, $notifier, $products_options_fields)
+    protected function updateNotifyAttributesModuleFormatValue(&$callingClass, $notifier, $products_options_fields)
     {
         global $products_options_array, $selected_attribute, $products_options_details, $tmp_radio, $tmp_checkbox/*, $zv_display_select_option*/;
         
@@ -99,7 +99,7 @@ class zcObserverAttribImageSwap extends base
     }
     
     //  NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH
-    function updateNotifyAttributesModuleDefaultSwitch(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id)
+    protected function updateNotifyAttributesModuleDefaultSwitch(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id)
     {
         
         // LINK
@@ -113,7 +113,7 @@ class zcObserverAttribImageSwap extends base
     }
     
     //  NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT
-    function updateNotifyAttributesModuleOptionBuilt(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id, &$options_attributes_image)
+    protected function updateNotifyAttributesModuleOptionBuilt(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id, &$options_attributes_image)
     {
         global $products_options;
         
@@ -139,7 +139,7 @@ class zcObserverAttribImageSwap extends base
     }
     
     // FUNCTIONS_LOOKUPS_OPTION_NAME_NO_VALUES_OPT_TYPE', $opt_type, $test_var)
-    function updateFunctionsLookupsOptionNameNoValuesOptType(&$callingClass, $notifier, $opt_type, &$test_var) {
+    protected function updateFunctionsLookupsOptionNameNoValuesOptType(&$callingClass, $notifier, $opt_type, &$test_var) {
 
         // Check to see if the option type that is being evaluated is the link type added by this program.
         if ($opt_type == PRODUCTS_OPTIONS_TYPE_LINK) {
@@ -151,7 +151,7 @@ class zcObserverAttribImageSwap extends base
         }
     }
     
-    function update(&$callingClass, $notifier, $paramsArray = array()) {
+    protected function update(&$callingClass, $notifier, $paramsArray = array()) {
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_START_OPTION') {
             $this->updateNotifyAttributesModuleStartOption($callingClass, $notifier, $paramsArray);
@@ -183,7 +183,7 @@ class zcObserverAttribImageSwap extends base
     }
     
     // function zen_link has been captured here instead of as an additional function.
-    function zen_link($texts, $hrefs, $parameters = '') {
+    public function zen_link($texts, $hrefs, $parameters = '') {
         
         for ($i=0, $n=sizeof($texts); $i<$n; $i++) 
         {
@@ -200,7 +200,7 @@ class zcObserverAttribImageSwap extends base
         return $link;
     }
 
-    function get_attrib_image($products_id = 0, $products_options_values_id = 0) {
+    public function get_attrib_image($products_id = 0, $products_options_values_id = 0) {
         global $db, $lng;
 
         if (!zen_products_id_valid($products_id) || 0 >= (int)$products_options_values_id) {
