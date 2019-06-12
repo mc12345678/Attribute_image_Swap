@@ -61,7 +61,7 @@ class zcObserverAttribImageSwap extends base
         
         $products_options_values_id = $products_options_fields['products_options_values_id'];
         
-        if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
+        if (defined('PRODUCTS_OPTIONS_TYPE_LINK') && $this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
             $this->tmp_html = $this->zen_link($products_options_array, '', $this->parameters . ' class="product_attrib_link"');
         } /*else {
             $zv_display_select_option ++;
@@ -103,7 +103,7 @@ class zcObserverAttribImageSwap extends base
     {
         
         // LINK
-        if ($products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
+        if (defined('PRODUCTS_OPTIONS_TYPE_LINK') && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
             $options_name[] = $products_options_names_fields['products_options_name'];
             $options_menu[] = $this->tmp_html . "\n";
             $options_comment[] = $products_options_names_fields['products_options_comment'];
@@ -117,7 +117,7 @@ class zcObserverAttribImageSwap extends base
     {
         global $products_options;
         
-        if ($products_options->RecordCount() == 1 && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
+        if ($products_options->RecordCount() == 1 && defined('PRODUCTS_OPTIONS_TYPE_LINK') && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
             array_pop($options_name);
             array_pop($options_menu);
             array_pop($options_comment);
@@ -142,7 +142,7 @@ class zcObserverAttribImageSwap extends base
     protected function updateFunctionsLookupsOptionNameNoValuesOptType(&$callingClass, $notifier, $opt_type, &$test_var) {
 
         // Check to see if the option type that is being evaluated is the link type added by this program.
-        if ($opt_type == PRODUCTS_OPTIONS_TYPE_LINK) {
+        if (defined('PRODUCTS_OPTIONS_TYPE_LINK') && $opt_type == PRODUCTS_OPTIONS_TYPE_LINK) {
             // Set $test_var to false, which means that this option type is not expected to have a value associated with it.
             // In ZC 1.5.5, this allows a product to be added to the cart that has this attribute.
             // Calling function is found in includes/functions/functions_lookups.php: zen_option_name_base_expects_no_values
@@ -224,6 +224,8 @@ class zcObserverAttribImageSwap extends base
         }
 
         $default_lang_id = $lng->catalog_languages[DEFAULT_LANGUAGE]['id'];
+        $products_image = array();
+        $products_image['default'] = '';//zen_products_lookup((int)$products_id, 'products_image');
 
         while (!$products_color_image->EOF) {
             if ($products_color_image->fields['language_id'] != $_SESSION['languages_id'] && $products_color_image->fields['language_id'] != $default_lang_id) {

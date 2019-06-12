@@ -54,7 +54,7 @@ class zcAttrib_prod_info extends base
           $rel = 'colorbox-' . rand(100, 999);
         }
         $products_name = zen_products_lookup((int)$products_id, 'products_name');
-        $image_return = '<a href="' . zen_colorbox($products_image_large, addslashes($products_name), LARGE_IMAGE_WIDTH, LARGE_IMAGE_HEIGHT) . '" rel="' . $rel . '" class="'. "nofollow" . '" title="'. addslashes($products_name) . '">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
+        $image_return = '<a href="' . zen_colorbox($products_image_large, addslashes($products_name), (defined('LARGE_IMAGE_WIDTH') ? LARGE_IMAGE_WIDTH : ''), (defined('LARGE_IMAGE_HEIGHT') ? LARGE_IMAGE_HEIGHT : '')) . '" rel="' . $rel . '" class="'. "nofollow" . '" title="'. addslashes($products_name) . '">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
       } else {
         // Generating only the javascript version of the link, because if javascript is disabled on the client side, then none of this is executed.
         $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
