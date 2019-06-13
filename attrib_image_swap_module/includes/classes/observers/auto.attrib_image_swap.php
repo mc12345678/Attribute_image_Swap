@@ -71,8 +71,21 @@ class zcObserverAttribImageSwap extends base
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_RADIO) {
             
             switch ($this->products_options_names_fields['products_options_images_style']) {
-                case '8':
                 case '6':
+                    // Place images at the bottom of the attribute list as if attribute type were 0.
+                    if ($products_options_fields['attributes_image'] != '') {
+                      $GLOBALS['tmp_attributes_image_row']++;
+
+                      //              if ($tmp_attributes_image_row > PRODUCTS_IMAGES_ATTRIBUTES_PER_ROW) {
+                      if ($GLOBALS['tmp_attributes_image_row'] > $this->products_options_names_fields['products_options_images_per_row']) {
+                        $GLOBALS['tmp_attributes_image'] .= '<br class="clearBoth" />' . "\n";
+                        $GLOBALS['tmp_attributes_image_row'] = 1;
+                      }
+
+// Do not show TEXT option value on images
+                      $GLOBALS['tmp_attributes_image'] .= '<div class="attribImg">' . zen_image(DIR_WS_IMAGES . $products_options_fields['attributes_image']) . (PRODUCT_IMAGES_ATTRIBUTES_NAMES == '1' ? ( ($this->products_options_names_fields['products_options_type'] != PRODUCTS_OPTIONS_TYPE_TEXT && $this->products_options_names_fields['products_options_type'] != PRODUCTS_OPTIONS_TYPE_FILE) ? '<br />' . $products_options_fields['products_options_values_name'] : '') : '') . '</div>' . "\n";
+                    }
+                case '8':
                     $tmp_radio .= zen_draw_radio_field('id[' . $this->products_options_names_fields['products_options_id'] . ']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"'.$this->parameters) . '<label class="attribsRadioButton zero" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
                 
@@ -85,8 +98,22 @@ class zcObserverAttribImageSwap extends base
         // Addresses offering attribute image swap capability for checkboxes.  Items identified in this list will be replaced as applicable.
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_CHECKBOX) {
             switch ($this->products_options_names_fields['products_options_images_style']) {
-                case '8':
                 case '6':
+                    // Place images at the bottom of the attribute list as if attribute type were 0.
+                    if ($products_options_fields['attributes_image'] != '') {
+                      $GLOBALS['tmp_attributes_image_row']++;
+
+                      //              if ($tmp_attributes_image_row > PRODUCTS_IMAGES_ATTRIBUTES_PER_ROW) {
+                      if ($GLOBALS['tmp_attributes_image_row'] > $this->products_options_names_fields['products_options_images_per_row']) {
+                        $GLOBALS['tmp_attributes_image'] .= '<br class="clearBoth" />' . "\n";
+                        $GLOBALS['tmp_attributes_image_row'] = 1;
+                      }
+
+// Do not show TEXT option value on images
+                      $GLOBALS['tmp_attributes_image'] .= '<div class="attribImg">' . zen_image(DIR_WS_IMAGES . $products_options_fields['attributes_image']) . (PRODUCT_IMAGES_ATTRIBUTES_NAMES == '1' ? ( ($this->products_options_names_fields['products_options_type'] != PRODUCTS_OPTIONS_TYPE_TEXT && $this->products_options_names_fields['products_options_type'] != PRODUCTS_OPTIONS_TYPE_FILE) ? '<br />' . $products_options_fields['products_options_values_name'] : '') : '') . '</div>' . "\n";
+                    }
+                case '8':
+//                case '6':
                     $tmp_checkbox .= zen_draw_checkbox_field('id[' . $this->products_options_names_fields['products_options_id'] . ']['.$products_options_values_id.']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"'.$this->parameters) . '<label class="attribsCheckbox" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
                 
