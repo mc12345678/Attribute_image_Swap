@@ -67,6 +67,13 @@ var stateChanged = function () {
                 document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
             }
                 <?php if (defined('ZEN_COLORBOX_STATUS') && ZEN_COLORBOX_STATUS == 'true') {
+                   if (file_exists(DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . $template_dir . '/zen_colorbox_language.php')) {
+                     require (DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . $template_dir . '/zen_colorbox_language.php');
+                   } elseif (file_exists(DIR_WS_LANGUAGES . $_SESSION['language'] . '/zen_colorbox_language.php')) {
+                     require (DIR_WS_LANGUAGES . $_SESSION['language'] . '/zen_colorbox_language.php');
+                   } else {
+                     require (DIR_WS_LANGUAGES . 'english/zen_colorbox_language.php');
+                   }
                   require(DIR_FS_CATALOG . DIR_WS_CLASSES . 'zen_colorbox/autoload_default.php');
                   }
                 ?>
