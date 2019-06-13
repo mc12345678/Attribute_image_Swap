@@ -3,7 +3,7 @@ SELECT @products_options_types_id := pot.products_options_types_id
 			FROM `products_options_types` pot	
 			WHERE pot.products_options_types_name = 'Link';
 
-UPDATE products_options SET products_options_types_id = 0 WHERE products_options_types_id = @products_options_types_id;
+UPDATE products_options SET products_options_type = 0 WHERE products_options_type = @products_options_types_id;
 
 DELETE FROM products_options_types WHERE products_options_types_id = @products_options_types_id AND @products_options_types_id != 0;
 
