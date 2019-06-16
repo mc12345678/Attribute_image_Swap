@@ -86,10 +86,12 @@ class zcObserverAttribImageSwap extends base
                       $GLOBALS['tmp_attributes_image'] .= '<div class="attribImg">' . zen_image(DIR_WS_IMAGES . $products_options_fields['attributes_image']) . (PRODUCT_IMAGES_ATTRIBUTES_NAMES == '1' ? ( ($this->products_options_names_fields['products_options_type'] != PRODUCTS_OPTIONS_TYPE_TEXT && $this->products_options_names_fields['products_options_type'] != PRODUCTS_OPTIONS_TYPE_FILE) ? '<br />' . $products_options_fields['products_options_values_name'] : '') : '') . '</div>' . "\n";
                     }
                 case '8':
+                    $products_options_details = str_replace('<br />', '', $products_options_details);
                     $tmp_radio .= zen_draw_radio_field('id[' . $this->products_options_names_fields['products_options_id'] . ']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"'.$this->parameters) . '<label class="attribsRadioButton zero" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
                 
                 case '7':
+                    $products_options_details = str_replace('<br />', '', $products_options_details);
                     $tmp_radio .= zen_draw_radio_field('id[' . $this->products_options_names_fields['products_options_id'] . ']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"') . '<label class="attribsRadioButton zero" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
             }
@@ -114,10 +116,12 @@ class zcObserverAttribImageSwap extends base
                     }
                 case '8':
 //                case '6':
+                    $products_options_details = str_replace('<br />', '', $products_options_details);
                     $tmp_checkbox .= zen_draw_checkbox_field('id[' . $this->products_options_names_fields['products_options_id'] . ']['.$products_options_values_id.']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"'.$this->parameters) . '<label class="attribsCheckbox" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;
                 
                 case '7':
+                    $products_options_details = str_replace('<br />', '', $products_options_details);
                     $tmp_checkbox .= zen_draw_checkbox_field('id[' . $this->products_options_names_fields['products_options_id'] . ']['.$products_options_values_id.']', $products_options_values_id, $selected_attribute, 'id="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '"') . '<label class="attribsCheckbox" for="' . 'attrib-' . $this->products_options_names_fields['products_options_id'] . '-' . $products_options_values_id . '">' . $products_options_details . '</label><br />' . "\n";
                 break;					  
                 
