@@ -31,19 +31,19 @@ class zcObserverAttribImageSwap extends base
     {
         global $params;
         
+        $params = '';
         if ($this->products_options_names_fields['products_options_images_style'] == 6 || $this->products_options_names_fields['products_options_images_style'] == 8) {
-            $params = ' onclick="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', ' . $products_options_fields['products_options_values_id'] . ', ' . (int)$_GET['products_id'] . ');"';
-        } else {
-            $params = '';
+            $params .= ' onclick="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', ' . $products_options_fields['products_options_values_id'] . ', ' . (int)$_GET['products_id'] . ');"';
         }
+        
         $this->parameters = $params;
         
         // Select option requires an onchange event instead of an onclick event like say a radio, or checkbox...
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_SELECT) {
+            $params = '';
+            
             if ($this->products_options_names_fields['products_options_images_style'] == 6 || $this->products_options_names_fields['products_options_images_style'] == 8) {
-                $params = ' onchange="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', this.value, ' . (int)$_GET['products_id'] . ');"';
-            } else {
-                $params = '';
+                $params .= ' onchange="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', this.value, ' . (int)$_GET['products_id'] . ');"';
             }
             $this->parameters = $params;
         }
