@@ -13,20 +13,27 @@ The image selected is also carried over into the shopping cart through an observ
 displays the attribute dependent selected image, then recommend that the installation of the feature added here be omitted.
 
 To use this functionality,
-rename the YOUR_TEMPLATE directory found in includes/modules to the name of your template and merge the contents of the file(s)
-in that folder with the file(s) in your existing template folder.  The file has been made compatible with potteryhouse's 
-stock by attributes, with products attribute grid and is based on ZC 1.5.5.  In the root directory is a copy of ZC 1.5.6's ajax.php file
-that was updated in Aug 2017 which should be an improved version over previous ZC versions and it should also replace the use of attrib_prod_info.php and add
-the protection offered by ZC functionality.
+rename the YOUR_TEMPLATE directory found in 2_ZC_Version/YOUR_VERSION/includes/modules to the name of your template and merge 
+the contents of the file(s) in that folder with the file(s) in your existing template folder.  YOUR_VERSION is the base Zen Cart
+Version of your store such as Zen Cart 1.5.5 would be in ZC155.  The latest stable version of the file(s) in this folder have been
+included; however, it is most important to simply incorporated the changes made to support this software.  The file has been made
+compatible with potteryhouse's stock by attributes, with products attribute grid and is based on ZC 1.5.5.  
 
-Two ways to address the admin files: either rename the admin folder to your *SECRET* admin directory name and upload
+In the root directory of 1_Main_Files is a copy of ZC 1.5.6b's ajax.php file that was updated in June 2019 and which should be an
+improved version over previous ZC versions and it should also replace the use of attrib_prod_info.php and add the protection
+offered by ZC functionality.  Until this file is found to produce a compatibility problem, it will be carried in the 1_Main_Files
+section.
+
+Two ways to address the admin files of 1_Main_Files and 2_ZC_Version: either rename the admin folder to your *SECRET* admin directory name and upload
 both the newly named admin directory and the includes folders to the root of your store (suggest merging file contents
 wherever an existing file is present in your store's copy), or can copy/merge the contents of the admin directory into
 the admin directory of your store.
 
 Running the sql query in the admin, tools->install SQL Patches area will add the products options type link and nothing
 extra, although the true functionality of that option does not yet appear to be revealed, so probably could be omitted.
-copy this module and run the sql query using admin sql patches. 
+If the products options type link is already present, there is no need to run the sql again as it will add it again.
+
+Install/copy this module and (if desired to access the option name type of link) run the sql query using tools->admin sql patches. 
 To turn this functionality ON select the option name in option name manager and put the value 6, 7, or 8 in Attribute Style for Radio Buttons/Checkbox:text box.
 It also works for check box and has additional option type Link.
 Attribute images shown on the product listing page can be made off by entering an Attribute Style value 7 (swap will not occur) or 
@@ -72,6 +79,17 @@ includes/modules/pages/product_info/jscript_ais.php
 includes/modules/pages/product_info/on_load_ais.js
 
 Add: admin/includes/auto_loaders/config.attribute_image_swap.php
+
+Updated 06/16/19, V1.5.10: (mc12345678)
+- Primarily updated what is now considered 1_Main_Files.
+- Moved files into sub-folders to improve clarity of installation and to identify Zen Cart version specific files.
+- Moved admin language defines out of the core language file for options_name_manager.php and placed in a separate file.
+- Updated ajax.php file to the Zen Cart V1.5.6b version.
+- Addressed a few minor PHP 7.3 related issues.
+- Improved incorporation with Zen Colorbox.
+- Added display of images for option type 6 when applied to radio buttons and checkboxes as if the image type had been set to 0.
+- Added scope declaration for methods in the observer class.
+- Updated install and remove SQL, including comments for understanding.
 
 Updated 04/07/18, V1.5.9: (mc12345678)
 - Added try/catch javascript style code to support return from shopping cart where attributes do not have an assigned action.
