@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright 2019
+ * @author mc12345678 of http://mc12345678.com
+ **/
 
 class zcAttrib_prod_info extends base 
 {
@@ -18,8 +22,13 @@ class zcAttrib_prod_info extends base
     
     $products_image = $zcObserverAttribImageSwap->get_attrib_image($products_id, $products_options_values_id);
     
+    // If there is no image then return the default/last value of $image_return
+    if ($products_image == '') {
+      return $image_return;
+    }
+    
     // Get html image code using attribute image or standard image.
-    if ($products_image != '') {
+//    if ($products_image != '') {
         // Found an attribute image, now further image location necessary.
 /*    } else { // mc12345678 Commented out to support restoring the image to its original image instead of what is "calculated" below.
         $sql = "select p.products_image
@@ -48,6 +57,7 @@ class zcAttrib_prod_info extends base
       }
 
       if(function_exists('zen_colorbox') && ZEN_COLORBOX_STATUS == 'true') {
+        $products_name = zen_products_lookup((int)$products_id, 'products_name');
 
         // Do the older style of supporting zen_colorbox.
         if(ZEN_COLORBOX_GALLERY_MODE == 'true' && ZEN_COLORBOX_GALLERY_MAIN_IMAGE == 'true') {
@@ -55,7 +65,6 @@ class zcAttrib_prod_info extends base
         } else {
           $rel = 'colorbox-' . rand(100, 999);
         }
-        $products_name = zen_products_lookup((int)$products_id, 'products_name');
 
         $image_return = '<a href="' . zen_colorbox($products_image_large, addslashes($products_name), (defined('LARGE_IMAGE_WIDTH') ? LARGE_IMAGE_WIDTH : ''), (defined('LARGE_IMAGE_HEIGHT') ? LARGE_IMAGE_HEIGHT : '')) . '" data-cbox-rel="' . $rel . '" class="'. "nofollow" . '" title="'. addslashes($products_name) . '">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
 
@@ -80,7 +89,7 @@ class zcAttrib_prod_info extends base
         // Generating only the javascript version of the link, because if javascript is disabled on the client side, then none of this is executed.
         $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
       }
-    }
+//    }
     return $image_return; 
   }
 }
