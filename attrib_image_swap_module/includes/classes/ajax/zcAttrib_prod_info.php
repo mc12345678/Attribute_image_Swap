@@ -48,13 +48,34 @@ class zcAttrib_prod_info extends base
       }
 
       if(function_exists('zen_colorbox') && ZEN_COLORBOX_STATUS == 'true') {
+
+        // Do the older style of supporting zen_colorbox.
         if(ZEN_COLORBOX_GALLERY_MODE == 'true' && ZEN_COLORBOX_GALLERY_MAIN_IMAGE == 'true') {
           $rel = 'colorbox';
         } else {
           $rel = 'colorbox-' . rand(100, 999);
         }
         $products_name = zen_products_lookup((int)$products_id, 'products_name');
-        $image_return = '<a href="' . zen_colorbox($products_image_large, addslashes($products_name), (defined('LARGE_IMAGE_WIDTH') ? LARGE_IMAGE_WIDTH : ''), (defined('LARGE_IMAGE_HEIGHT') ? LARGE_IMAGE_HEIGHT : '')) . '" rel="' . $rel . '" class="'. "nofollow" . '" title="'. addslashes($products_name) . '">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
+
+        $image_return = '<a href="' . zen_colorbox($products_image_large, addslashes($products_name), (defined('LARGE_IMAGE_WIDTH') ? LARGE_IMAGE_WIDTH : ''), (defined('LARGE_IMAGE_HEIGHT') ? LARGE_IMAGE_HEIGHT : '')) . '" data-cbox-rel="' . $rel . '" class="'. "nofollow" . '" title="'. addslashes($products_name) . '">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
+
+        // Use the actual zen_colorbox processing (module)
+        $zen_colorbox_file = DIR_WS_MODULES . zen_get_module_directory('zen_colorbox');
+
+        if (is_file($zen_colorbox_file) && (ZEN_COLORBOX_GALLERY_MAIN_IMAGE == 'true')) {
+          $flag_display_large = true;
+          $thumb_slashes = $image;
+
+          include $zen_colorbox_file;
+
+          // Remove the excess script related portions of the response to give just
+          //   the basic HTML content
+          $script_link = str_replace('<script type="text/javascript"><!--' . "\n" . 'document.write(\'', '', $script_link);
+          $script_link = str_replace(');' . "\n" . '//--></script>', '', $script_link);
+          $script_link = str_replace('\/', '/', $script_link);
+          $script_link = str_replace('\'', '', $script_link);
+          $image_return = $script_link;
+        }
       } else {
         // Generating only the javascript version of the link, because if javascript is disabled on the client side, then none of this is executed.
         $image_return = '<a href="javascript:popupWindow(\'' . zen_href_link(FILENAME_POPUP_IMAGE_ADDITIONAL, 'products_image_large_additional=' . $products_image_large) . '\')">' . $image . '<br /><span class="imgLink">' . $larger_text . '</span></a>';
