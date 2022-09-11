@@ -19,21 +19,20 @@ class zcObserverAttribImageSwap extends base
         $this->attach($this, $observeThis);
     }
     
-    // NOTIFY_ATTRIBUTES_MODULE_START_OPTION
-    protected function updateNotifyAttributesModuleStartOption(&$callingClass, $notifier, $products_options_names_fields)
-    {
+    protected function notify_attributes_module_start_option(&$callingClass, $notifier, $products_options_names_fields) {
         $this->products_options_names_fields = $products_options_names_fields;
         $this->parameters = '';
     }
     
-    // NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP
-    protected function updateNotifyAttributesModuleStartOptionsLoop(&$callingClass, $notifier, $i, &$products_options_fields)
+    protected function notify_attributes_module_start_options_loop(&$callingClass, $notifier, $i, &$products_options_fields, &$products_options_names_fields = null, &$data_properties = null, &$field_disabled = null, &$attributeDetailsArrayForJson = null)
     {
         global $params;
+        $orig_data_properties = $data_properties;
         
         $params = '';
         if ($this->products_options_names_fields['products_options_images_style'] == 6 || $this->products_options_names_fields['products_options_images_style'] == 8) {
             $params .= ' onclick="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', ' . $products_options_fields['products_options_values_id'] . ', ' . (int)$_GET['products_id'] . ');"';
+            $data_properties .= $params;
         }
         
         $this->parameters = $params;
@@ -41,9 +40,11 @@ class zcObserverAttribImageSwap extends base
         // Select option requires an onchange event instead of an onclick event like say a radio, or checkbox...
         if ($this->products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_SELECT) {
             $params = '';
+            $data_properties = $orig_data_properties;
             
             if ($this->products_options_names_fields['products_options_images_style'] == 6 || $this->products_options_names_fields['products_options_images_style'] == 8) {
                 $params .= ' onchange="getattribimage(' . '\'id[' . $this->products_options_names_fields['products_options_id'] . ']\'' . ', ' . MEDIUM_IMAGE_WIDTH . ', ' . MEDIUM_IMAGE_HEIGHT . ', this.value, ' . (int)$_GET['products_id'] . ');"';
+                $data_properties .= $params;
             }
             $this->parameters = $params;
         }
@@ -54,8 +55,7 @@ class zcObserverAttribImageSwap extends base
         }
     }
     
-    // NOTIFY_ATTRIBUTES_MODULE_FORMAT_VALUE
-    protected function updateNotifyAttributesModuleFormatValue(&$callingClass, $notifier, $products_options_fields)
+    protected function notify_attributes_module_format_value(&$callingClass, $notifier, $products_options_fields)
     {
         global $products_options_array, $selected_attribute, $products_options_details, $tmp_radio, $tmp_checkbox/*, $zv_display_select_option*/;
         
@@ -129,8 +129,7 @@ class zcObserverAttribImageSwap extends base
         }
     }
     
-    //  NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH
-    protected function updateNotifyAttributesModuleDefaultSwitch(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id)
+    protected function notify_attributes_module_default_switch(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id)
     {
         
         // LINK
@@ -143,8 +142,7 @@ class zcObserverAttribImageSwap extends base
         }
     }
     
-    //  NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT
-    protected function updateNotifyAttributesModuleOptionBuilt(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id, &$options_attributes_image)
+    protected function notify_attributes_module_option_built(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id, &$options_attributes_image)
     {
         global $products_options;
         
@@ -160,7 +158,7 @@ class zcObserverAttribImageSwap extends base
             //   That said, it would seem that if the single option value option type were called upon and that images are in other ways addressed by the below code, then this array item should be popped off the set as well.
             // This could maybe be commented out for 2 reasons: 1) images are not addressed in the below called function, and 2) if they need to be cleared they  will below.
             
-            $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
+            $this->notify_attributes_module_default_switch($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
         }
         
         // Removes the image from being displayed adjacent to the attribute (products_options_images_style as selected on options Name Manager is set to 8 for the option name.
@@ -169,6 +167,37 @@ class zcObserverAttribImageSwap extends base
         }
     }
     
+    // NOTIFY_ATTRIBUTES_MODULE_START_OPTION
+    protected function updateNotifyAttributesModuleStartOption(&$callingClass, $notifier, $products_options_names_fields)
+    {
+        $this->notify_attributes_module_start_option($callingClass, $notifier, $products_options_names_fields);
+    }
+    
+    // NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP
+    protected function updateNotifyAttributesModuleStartOptionsLoop(&$callingClass, $notifier, $i, &$products_options_fields)
+    {
+        $this->notify_attributes_module_start_options_loop($callingClass, $notifier, $i, $products_options_fields);
+    }
+    
+    // NOTIFY_ATTRIBUTES_MODULE_FORMAT_VALUE
+    protected function updateNotifyAttributesModuleFormatValue(&$callingClass, $notifier, $products_options_fields)
+    {
+        $this->notify_attributes_module_format_value($callingClass, $notifier, $products_options_fields);
+    }
+    
+    //  NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH
+    protected function updateNotifyAttributesModuleDefaultSwitch(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id)
+    {
+        $this->notify_attributes_module_default_switch($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
+    }
+    
+    //  NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT
+    protected function updateNotifyAttributesModuleOptionBuilt(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id, &$options_attributes_image)
+    {
+        $this->notify_attributes_module_option_built($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image);
+    }
+    
+    // Can not camel_case this function because Zen Cart doesn't recognize it as an allowed observer.
     // FUNCTIONS_LOOKUPS_OPTION_NAME_NO_VALUES_OPT_TYPE', $opt_type, $test_var)
     protected function updateFunctionsLookupsOptionNameNoValuesOptType(&$callingClass, $notifier, $opt_type, &$test_var) {
 
@@ -185,26 +214,26 @@ class zcObserverAttribImageSwap extends base
     protected function update(&$callingClass, $notifier, $paramsArray = array()) {
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_START_OPTION') {
-            $this->updateNotifyAttributesModuleStartOption($callingClass, $notifier, $paramsArray);
+            $this->notify_attributes_module_start_option($callingClass, $notifier, $paramsArray);
         }
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP') {
             global $products_options;
-            $this->updateNotifyAttributesModuleStartOptionsLoop($callingClass, $notifier, $paramsArray, $products_options->fields);
+            $this->notify_attributes_module_start_options_loop($callingClass, $notifier, $paramsArray, $products_options->fields);
         }
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_FORMAT_VALUE') {
-            $this->updateNotifyAttributesModuleFormatValue($callingClass, $notifier, $paramsArray);
+            $this->notify_attributes_module_format_value($callingClass, $notifier, $paramsArray);
         }
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH') {
             global $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id;
-            $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
+            $this->notify_attributes_module_default_switch($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
         }
         
         if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT') {
             global $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image;
-            $this->updateNotifyAttributesModuleOptionBuilt($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image);
+            $this->notify_attributes_module_option_built($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image);
         }
         
         if ($notifier == 'FUNCTIONS_LOOKUPS_OPTION_NAME_NO_VALUES_OPT_TYPE') {
