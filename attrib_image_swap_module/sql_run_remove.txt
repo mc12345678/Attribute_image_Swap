@@ -1,7 +1,9 @@
 
-SELECT @products_options_types_id := pot.products_options_types_id
+SET @products_options_types_id = (
+SELECT pot.products_options_types_id
 			FROM `products_options_types` pot	
 			WHERE pot.products_options_types_name = 'Link';
+)
 
 UPDATE products_options SET products_options_type = 0 WHERE products_options_type = @products_options_types_id;
 

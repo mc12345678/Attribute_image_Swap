@@ -1,7 +1,7 @@
 # Get next products_options_type_id value.
-SELECT @products_options_types_id := pot.products_options_types_id+1 FROM `products_options_types` pot order by pot.products_options_types_id desc limit 1;
+SET @products_options_types_id = (SELECT pot.products_options_types_id+1 FROM `products_options_types` pot ORDER BY pot.products_options_types_id DESC LIMIT 1);
 
 # Next 2 lines  add the 'link' products_options_type to the database and to the configuration table.
-INSERT INTO `products_options_types` (products_options_types_id, products_options_types_name) VALUES (@products_options_types_id, 'Link');
+INSERT IGNORE INTO `products_options_types` (products_options_types_id, products_options_types_name) VALUES (@products_options_types_id, 'Link');
 
-INSERT INTO `configuration` (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added, use_function, set_function) VALUES ('Link product option type', 'PRODUCTS_OPTIONS_TYPE_LINK', @products_options_types_id, 'Numeric value of the link product option type', 6, 0, now(), NULL, NULL);
+INSERT IGNORE INTO `configuration` (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added, use_function, set_function) VALUES ('Link product option type', 'PRODUCTS_OPTIONS_TYPE_LINK', @products_options_types_id, 'Numeric value of the link product option type', 6, 0, now(), NULL, NULL);
