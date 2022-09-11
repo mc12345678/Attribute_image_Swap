@@ -58,30 +58,32 @@ function GetXmlHttpObject() {
 };
 
 var stateChanged = function () {
-    if (xmlHttp.readyState === XMLHttpRequest.DONE) {
-        if (xmlHttp.status === 200) {
-            var product_color_image = JSON.parse(xmlHttp.responseText);
-            if (product_color_image !== "") {
-                document.getElementById("productMainImage").innerHTML = product_color_image;
-            } else {
-                document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
-            }
-                <?php if (defined('ZEN_COLORBOX_STATUS') && ZEN_COLORBOX_STATUS == 'true') {
-                   if (is_file(DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . $template_dir . '/zen_colorbox_language.php')) {
-                     require (DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . $template_dir . '/zen_colorbox_language.php');
-                   } elseif (is_file(DIR_WS_LANGUAGES . $_SESSION['language'] . '/zen_colorbox_language.php')) {
-                     require (DIR_WS_LANGUAGES . $_SESSION['language'] . '/zen_colorbox_language.php');
-                   } else {
-                     require (DIR_WS_LANGUAGES . 'english/zen_colorbox_language.php');
-                   }
-                  require(DIR_FS_CATALOG . DIR_WS_CLASSES . 'zen_colorbox/autoload_default.php');
-                  }
-                ?>
-        } else {
-//            alert("Problem retrieving data");
-            console.log(this.responseText);
-        }
+    if (xmlHttp.readyState !== XMLHttpRequest.DONE) {
+        return;
     }
+    if (xmlHttp.status !== 200) {
+//            alert("Problem retrieving data");
+        console.log(this.responseText);
+        return;
+    }
+
+    var product_color_image = JSON.parse(xmlHttp.responseText);
+    if (product_color_image !== "") {
+        document.getElementById("productMainImage").innerHTML = product_color_image;
+    } else {
+        document.getElementById("productMainImage").innerHTML = origImage; // Return to original image.
+    }
+        <?php if (defined('ZEN_COLORBOX_STATUS') && ZEN_COLORBOX_STATUS === 'true') {
+           if (is_file(DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . $template_dir . '/zen_colorbox_language.php')) {
+               require (DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . $template_dir . '/zen_colorbox_language.php');
+           } elseif (is_file(DIR_WS_LANGUAGES . $_SESSION['language'] . '/zen_colorbox_language.php')) {
+               require (DIR_WS_LANGUAGES . $_SESSION['language'] . '/zen_colorbox_language.php');
+           } else {
+               require (DIR_WS_LANGUAGES . 'english/zen_colorbox_language.php');
+           }
+           require(DIR_FS_CATALOG . DIR_WS_CLASSES . 'zen_colorbox/autoload_default.php');
+       }
+?>
 };
 
 function getattribimage(attribfield, width, height, products_options_values_id, products_id) {
