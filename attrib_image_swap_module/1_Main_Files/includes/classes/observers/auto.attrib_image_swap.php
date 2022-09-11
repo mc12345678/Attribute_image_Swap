@@ -133,13 +133,15 @@ class zcObserverAttribImageSwap extends base
     {
         
         // LINK
-        if (defined('PRODUCTS_OPTIONS_TYPE_LINK') && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK) {
-            $options_name[] = $products_options_names_fields['products_options_name'];
-            $options_menu[] = $this->tmp_html . "\n";
-            $options_comment[] = $products_options_names_fields['products_options_comment'];
-            $options_comment_position[] = ($products_options_names_fields['products_options_comment_position'] == '1' ? '1' : '0');
-            $options_html_id[] = 'lnk-attrib-' . $products_options_names_fields['products_options_id'];
+        if (!(defined('PRODUCTS_OPTIONS_TYPE_LINK') && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_LINK)) {
+            return;
         }
+
+        $options_name[] = $products_options_names_fields['products_options_name'];
+        $options_menu[] = $this->tmp_html . "\n";
+        $options_comment[] = $products_options_names_fields['products_options_comment'];
+        $options_comment_position[] = ($products_options_names_fields['products_options_comment_position'] == '1' ? '1' : '0');
+        $options_html_id[] = 'lnk-attrib-' . $products_options_names_fields['products_options_id'];
     }
     
     protected function notify_attributes_module_option_built(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id, &$options_attributes_image)
