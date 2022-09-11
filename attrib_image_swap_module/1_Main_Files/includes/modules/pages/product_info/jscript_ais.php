@@ -108,7 +108,7 @@ function getattribimage(attribfield, width, height, products_options_values_id, 
         jsonData["products_options_values_id"] = products_options_values_id;
         jsonData["products_id"] = products_id;
 
-        var option = { url : "ajax.php?act=attrib_prod_info&method=swap_image<?php echo (!empty(zen_get_all_get_params(array('action')))) ? '&' . preg_replace("/&$/","",zen_get_all_get_params(array('action'))) : ''; ?>",
+        var option = { url : "ajax.php?act=attrib_prod_info&method=swap_image<?php echo (!empty($_GET['main_page']) ? '&main_page=' . $_GET['main_page'] : '') . ((!empty(zen_get_all_get_params(array('action')))) ? '&' . preg_replace("/&$/","",zen_get_all_get_params(array('action'))) : ''); ?>",
                        data : jsonData,
                        timeout : 30000
                      };
