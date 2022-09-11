@@ -20,7 +20,7 @@
 // $Id: jscript_ais.php,v 1.1 2016/10/17 21:50:47 tbowen Exp $ mc12345678 2016-12-14
 //
 ?>
-<script type="text/javascript"><!--
+<script type="text/javascript">
 <?php if (ATTRIBUTES_ENABLED_IMAGES == 'true') { ?>
 function changebgcolor(id, color) {
 
@@ -220,4 +220,4 @@ if ($ais_support) {?>
 };
 //--------------------------------------------------------
 
-//--></script>
+</script>
