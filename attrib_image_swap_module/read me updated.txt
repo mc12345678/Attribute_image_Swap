@@ -16,8 +16,8 @@ To use this functionality,
 rename the YOUR_TEMPLATE directory found in 2_ZC_Version/YOUR_VERSION/includes/modules to the name of your template and merge 
 the contents of the file(s) in that folder with the file(s) in your existing template folder.  YOUR_VERSION is the base Zen Cart
 Version of your store such as Zen Cart 1.5.5 would be in ZC155.  The latest stable version of the file(s) in this folder have been
-included; however, it is most important to simply incorporated the changes made to support this software.  The file has been made
-compatible with potteryhouse's stock by attributes, with products attribute grid and is based on ZC 1.5.5.  
+included; however, it is most important to simply incorporate the change(s) made to support this software.  The file has been made
+compatible with potteryhouse's stock by attributes, with products attribute grid and was based on ZC 1.5.5.  
 
 In the root directory of 1_Main_Files is a copy of ZC 1.5.6b's ajax.php file that was updated in June 2019 and which should be an
 improved version over previous ZC versions and it should also replace the use of attrib_prod_info.php and add the protection
@@ -31,7 +31,7 @@ the admin directory of your store.
 
 Running the sql query in the admin, tools->install SQL Patches area will add the products options type link and nothing
 extra, although the true functionality of that option does not yet appear to be revealed, so probably could be omitted.
-If the products options type link is already present, there is no need to run the sql again as it will add it again.
+If the products options type link is already present, there is no need to run the sql again as there have been no updates.
 
 Install/copy this module and (if desired to access the option name type of link) run the sql query using tools->admin sql patches. 
 To turn this functionality ON select the option name in option name manager and put the value 6, 7, or 8 in Attribute Style for Radio Buttons/Checkbox:text box.
@@ -50,9 +50,9 @@ preferred, then this file can be omitted from the installation.
 Will appreciate response. Please provide comment about the plugin to further upgrade this module.
 Thanks. 
 
-If after installation/load of the includes/modules/YOUR_TEMPLATE/attributes.php
+If after installation/load of the includes/modules/YOUR_TEMPLATE/attributes.php (not necessary nor included for ZC 1.5.7)
 you find that standard dropdown (select) attributes are not displayed, then
-either you haven't updated to ZC 1.5.5 and an older ZC plugin has removed expected
+either you haven't updated to ZC 1.5.5 or higher and an older ZC plugin has removed expected
 database values or the upgrade was not properly completed.  At any rate, the most
 likely solution is to run the contents of the sql_run_missing_dropdowns.txt file
 through the admin->Tools->Install SQL Patches tool to restore the necessary 
@@ -79,6 +79,17 @@ includes/modules/pages/product_info/jscript_ais.php
 includes/modules/pages/product_info/on_load_ais.js
 
 Add: admin/includes/auto_loaders/config.attribute_image_swap.php
+
+Updated 09/11/22, V1.5.11: (mc12345678)
+- Added Zen Cart 1.5.7 specifically related files.
+- Modified AJAX call to include the main_page parameter preventing continuous page reload.
+- Adjusted language files to account for ZC 1.5.7 new formatting of option name image placement styles.
+- Refactor (modify) files to improve logic readability.
+- Update SQL queries to allow successful execution (eliminates generation of debug logs) when queries run more than once.
+- Update SQL queries to adjust method of temporary variable assignment.
+- Update jQuery/javascript code to not be seen as non-important text and to refactor the code for readability.
+- Removed the need for modification or override of all but one file (options name manager).
+- Updated the instructions.
 
 Updated 06/16/19, V1.5.10: (mc12345678)
 - Primarily updated what is now considered 1_Main_Files.
