@@ -146,12 +146,12 @@ function ais_init() {
 
   if ($ais_support) {
     $sql = "SELECT count(*) AS quantity
-          from " . TABLE_PRODUCTS_OPTIONS . " popt, " . TABLE_PRODUCTS_ATTRIBUTES . " patrib
-          where    patrib.products_id=" . (int)$_GET['products_id'] . "
-            and      patrib.options_id = popt.products_options_id
-            and      popt.language_id = " . (int)$_SESSION['languages_id'] . "
-            and (popt.products_options_images_style = 6 OR popt.products_options_images_style = 8)
-             limit 1";
+          FROM " . TABLE_PRODUCTS_OPTIONS . " popt
+          INNER JOIN " . TABLE_PRODUCTS_ATTRIBUTES . " patrib ON (patrib.options_id = popt.products_options_id)
+          WHERE    patrib.products_id = " . (int)$_GET['products_id'] . "
+            AND      popt.language_id = " . (int)$_SESSION['languages_id'] . "
+            AND (popt.products_options_images_style = 6 OR popt.products_options_images_style = 8)
+             LIMIT 1";
     $has_ais = $db->Execute($sql);
     $ais_support = $has_ais->fields['quantity'] > 0;
   }

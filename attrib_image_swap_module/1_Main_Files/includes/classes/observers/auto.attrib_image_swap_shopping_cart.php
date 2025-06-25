@@ -39,14 +39,14 @@ class zcObserverAttribImageSwapShoppingCart extends base
 
 
             // Generate SQL to identify option selections that support swapping images.
-            $sql = "select    pa.options_values_id, pa.options_id
-                    from      " . TABLE_PRODUCTS_ATTRIBUTES . " pa,
-                    " . TABLE_PRODUCTS_OPTIONS . " po
-                    where     pa.options_id = po.products_options_id
-                    and       pa.products_id = :products_id:
-                    and       pa.options_values_id = :products_options_values_id:
-                    and       po.products_options_images_style in (:products_options_images_style:)
-                    and       po.language_id = :language_id:";
+            $sql = "SELECT    pa.options_values_id, pa.options_id
+                    FROM      " . TABLE_PRODUCTS_ATTRIBUTES . " pa
+                    INNER JOIN " . TABLE_PRODUCTS_OPTIONS . " po ON (pa.options_id = po.products_options_id)
+                    WHERE
+                    pa.products_id = :products_id:
+                    AND       pa.options_values_id = :products_options_values_id:
+                    AND       po.products_options_images_style in (:products_options_images_style:)
+                    AND       po.language_id = :language_id:";
 
             $sql = $db->bindVars($sql, ':products_id:', $productArray[$i]['id'], 'integer');
             $sql = $db->bindVars($sql, ':products_options_images_style:', implode(',', array(6, 8)), 'noquotestring');
