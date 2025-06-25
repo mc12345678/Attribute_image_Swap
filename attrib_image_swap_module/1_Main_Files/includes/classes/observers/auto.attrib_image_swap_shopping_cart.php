@@ -110,7 +110,7 @@ class zcObserverAttribImageSwapShoppingCart extends base
 
     function update(&$callingClass, $notifier, $paramsArray = array()) {
 
-        if ($notifier == 'NOTIFY_HEADER_END_SHOPPING_CART') {
+        if ($notifier === 'NOTIFY_HEADER_END_SHOPPING_CART') {
             $this->updateNotifyHeaderEndShoppingCart($callingClass, $notifier, $paramsArray);
         }
     }
