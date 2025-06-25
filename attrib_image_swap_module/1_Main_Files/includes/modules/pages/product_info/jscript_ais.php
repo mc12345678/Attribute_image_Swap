@@ -21,7 +21,7 @@
 //
 ?>
 <script type="text/javascript">
-<?php if (ATTRIBUTES_ENABLED_IMAGES == 'true') { ?>
+<?php if (defined('ATTRIBUTES_ENABLED_IMAGES') && ATTRIBUTES_ENABLED_IMAGES == 'true') { ?>
 function changebgcolor(id, color) {
 
     document.getElementById(id).style.backgroundColor = color;
